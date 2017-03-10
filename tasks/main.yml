@@ -1,0 +1,15 @@
+---
+# Main tasks file for indigo-dc.galaxycloud
+# Deploy a Galaxy server
+
+# Users rules
+- include: user.yml
+
+# Install Galaxy dependencies
+- include: prerequisites.yml
+
+# LUKS format external volume
+- include: luks.yml
+  when: isolation_level == "encryption" 
+  become_user: "{{ galaxy_user }}"
+  become: true

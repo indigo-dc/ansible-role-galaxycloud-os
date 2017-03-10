@@ -1,0 +1,62 @@
+---
+# Prerequisites installation recipe
+# Install CentOS 7 and Ubuntu 14.04 dependencies, creates directories, logrotate and password generator installation.
+
+#---
+#CentOS 7
+
+- name: Install CentOS7 packages
+  yum: name={{item}}
+       state=present
+  with_items:
+    - git
+    - vim
+    - wget
+  become_user: root
+  become_method: sudo
+  when: ansible_os_family == "RedHat"
+
+- name: Install the 'Development tools' package group
+  yum: name="@Development tools"
+       state=present
+  become_user: root
+  become_method: sudo
+  when: ansible_os_family == "RedHat"
+
+#---
+# Ubuntu 14.04
+
+- name: Install Ubuntu packages
+  apt: name={{item}}
+       state=present
+  with_items:
+    - git
+    - vim
+    - wget
+  become_user: root
+  become_method: sudo
+  when: ansible_os_family == "Debian"
+
+
+#########################################################
+# Create directories
+
+- name: Create log directory
+  file: path={{ item  }}
+        state=directory
+        owner={{galaxy_user}}
+        group={{galaxy_user}}
+  with_items:
+    - '{{ galaxy_log_path }}'
+    - '{{ export_dir }}'
+    - '/etc/galaxy'
+  become_user: root
+  become_method: sudo
+
+
+
+#########################################################
+# Set sudo autocomplete
+
+- name: Set sudo autocomplete
+  lineinfile: dest=/home/{{ galaxy_user }}/.bashrc line="\n#sudo autocomplete\ncomplete -cf sudo" state=present

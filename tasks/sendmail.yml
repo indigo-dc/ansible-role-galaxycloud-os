@@ -1,0 +1,29 @@
+---
+- name: Install mailutils
+  yum: name={{item}}
+       state=present
+  with_items:
+    - mailx
+  become_user: root
+  become_method: sudo
+  when: ansible_os_family == "RedHat"
+
+- name: Install mailutils
+  apt: name={{item}}
+       state=present
+  with_items:
+    - mailutils
+  become_user: root
+  become_method: sudo
+  when: ansible_os_family == "Debian"
+
+- name: Send mail using linux mail client
+  shell: 'echo "Please ssh into your Galaxy instance: ssh -i <private_key> galaxy@{{ ansible_default_ipv4.address }} and type <sudo fast_luks>" | mail -s "Ansible Report" {{ GALAXY_ADMIN_EMAIL }}'
+
+- name: Send mail to allert user. ONLY FOR TESTING, this is not passing gmail antispam filters
+  mail:
+    from: "indigo-test@indigo-datacloud.eu"
+    to: "{{ GALAXY_ADMIN_EMAIL }}"
+    subject: "ansible-role-galaxycloud-os report"
+    body: 'Please ssh into your Galaxy instance: ssh -i <private_key> galaxy@{{ ansible_default_ipv4.address }} and type "sudo fast_luks"'
+#    secure: always # will be enabled in Ansible 2.3

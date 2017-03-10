@@ -1,0 +1,87 @@
+---
+# Recipe to encrypt external volume
+
+- name: Install CentOS7 packages
+  yum: name={{item}}
+       state=present
+  with_items:
+    - cryptsetup-luks
+    - pv
+  become_user: root
+  become_method: sudo
+  when: ansible_os_family == "RedHat"
+
+- name: Install the 'Development tools' package group
+  yum: name="@Development tools"
+       state=present
+  become_user: root
+  become_method: sudo
+  when: ansible_os_family == "RedHat"
+
+#---
+# Ubuntu 14.04
+
+- name: Install Ubuntu packages
+  apt: name={{item}}
+       state=present
+  with_items:
+    - cryptsetup
+  become_user: root
+  become_method: sudo
+  when: ansible_os_family == "Debian"
+
+
+#---
+# LUKSformat volume
+
+- name: Copy indigo-dc.galaxycloud-os scripts
+  template: src={{ item.script }} dest={{ item.destination }} mode=a+x
+  with_items:
+    - { script: 'fast_luks.j2', destination: '/usr/local/bin/fast-luks' }
+    - { script: 'luksctl.j2', destination: '/usr/local/bin/luksctl' }
+  become_user: root
+  become_method: sudo
+
+# check if /export is mountpoint before LUKS encryption
+- include: check_mountpoint.yml
+
+# send a mail to the administrator: Notification simulation
+- include: sendmail.yml
+
+- name: Wait for fast-luks start (pidfile creation)
+  wait_for:
+    path: /var/run/fast_luks/fast-luks.pid
+    timeout: 18000 # wait for 5 hous FIXME
+
+- name: Wait for fast-luks finish (pidfile deletion)
+  wait_for:
+    path: /var/run/fast_luks/fast-luks.pid
+    state: absent
+    timeout: 18000 # wait for 5 hours FIXME
+
+- name: Wait for fast_luks success file
+  wait_for:
+    path: /tmp/fast-luks.success # FIXED in fast-luks script
+    timeout: 18000 # wait for 5 hours FIXME
+    search_regex: "LUKS encryption completed."
+
+- name: Check /etc/luks-cryptdev.conf. If not present something went wrong
+  wait_for:
+    path: /etc/luks-cryptdev.conf
+    state: present
+
+- name: Check if device mapper /dev/mapper/{{ cryptdev }} target exists
+  stat:
+    path: '/dev/mapper/{{ cryptdev }}'
+  register: crypt_device_register
+
+- name: Set permissions to {{ export_dir }} directory
+  file: path={{ export_dir }}
+        state=directory
+        owner={{ galaxy_user }}
+        group={{ galaxy_user }}
+  become_user: root
+  become_method: sudo
+
+# check if {{ export_dir }} is a mountpoint after LUKS encryption
+- include: check_mountpoint.yml

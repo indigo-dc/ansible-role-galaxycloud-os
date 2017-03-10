@@ -1,0 +1,12 @@
+---
+
+- name: Check if {{ export_dir }} is mountpoint
+  command: mountpoint -q {{ export_dir }} # -q is --quiet option
+  register: volume_stat
+  failed_when: False
+  changed_when: False
+
+# <regex>.rc contains the exit code of command line module (e.g command)
+- fail:
+    msg: 'ERROR: mountpoint -q {{ export_dir }} returned non-zero EXIT CODE: {{ export_dir }} is not a mountpoint.'
+  when: volume_stat.rc != 0

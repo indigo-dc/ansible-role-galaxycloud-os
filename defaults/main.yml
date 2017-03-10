@@ -1,0 +1,63 @@
+---
+# User to launch the Galaxy portal
+galaxy_user: galaxy
+
+# Galaxy user UID
+GALAXY_UID: "4001"
+
+# Path to install the Galaxy software
+galaxy_FS_path: /home/galaxy
+
+# Galaxy directory (usually galaxy or galaxy-dist)
+galaxy_directory: galaxy
+
+# Galaxy install path
+galaxy_install_path: "{{galaxy_FS_path}}/{{galaxy_directory}}"
+
+# Log directory
+galaxy_log_path: "/var/log/galaxy"
+
+# Galaxy userdata are stored here
+export_dir: "/export"
+
+# Galaxy instance url
+galaxy_instance_url: "http://{{ansible_default_ipv4.address}}/galaxy/"
+
+# Galaxy instance ssh public key
+galaxy_instance_key_pub: ""
+
+#################################
+
+# Galaxy administrator e-mail address
+GALAXY_ADMIN_EMAIL: "admin@server.com"
+
+#################################
+# Isolation specific vars
+#
+# 1. open ---------> IaaS block storage volume is attached
+# 2. onedata ------> OneData volume is mounted
+# 3. encryption ---> IaaS block storage volume encrypted with AES is mounted
+
+isolation_level: "open"
+
+userdata_onedata_token: ""
+
+#################################
+# 1. open
+
+
+#################################
+# 2. onedata
+
+
+#################################
+# 3. encryption
+
+# Encryption default values
+cipher_algorithm: 'aes-xts-plain64'
+keysize: '256'
+hash_algorithm: 'sha256'
+device: '/dev/vdb'
+cryptdev: 'crypt'
+mountpoint: '{{ export_dir }}'
+filesystem: 'ext4'
