@@ -40,14 +40,16 @@ GALAXY_ADMIN_EMAIL: "admin@server.com"
 
 isolation_level: "open"
 
-userdata_onedata_token: ""
-
 #################################
 # 1. open
 
 
 #################################
 # 2. onedata
+
+userdata_token: ""
+
+userdata_oneprovider: ""
 
 
 #################################
