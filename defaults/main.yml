@@ -26,12 +26,12 @@ galaxy_instance_url: "http://{{ansible_default_ipv4.address}}/galaxy/"
 # Galaxy instance ssh public key
 galaxy_instance_key_pub: ""
 
-#################################
-
+#________________________________
 # Galaxy administrator e-mail address
+
 GALAXY_ADMIN_EMAIL: "admin@server.com"
 
-#################################
+#________________________________
 # Isolation specific vars
 #
 # 1. open ---------> IaaS block storage volume is attached
@@ -40,22 +40,21 @@ GALAXY_ADMIN_EMAIL: "admin@server.com"
 
 isolation_level: "open"
 
-#################################
+#________________________________
 # 1. open
 
-
-#################################
+#________________________________
 # 2. onedata
 
-userdata_token: ""
+onedatactl_config_path: '/etc/galaxy'
+onedatactl_config_file: '{{ onedatactl_config_path }}/onedatactl.ini'
+userdata_provider: 'not_a_provider'
+userdata_token: 'not_a_token'
+refdata_space: 'galaxy'
 
-userdata_oneprovider: ""
-
-
-#################################
+#________________________________
 # 3. encryption
 
-# Encryption default values
 cipher_algorithm: 'aes-xts-plain64'
 keysize: '256'
 hash_algorithm: 'sha256'
