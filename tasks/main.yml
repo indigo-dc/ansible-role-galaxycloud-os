@@ -8,8 +8,14 @@
 # Install Galaxy dependencies
 - include: prerequisites.yml
 
+# Use Onedata space as default storage
+- include: onedata.yml
+  when: isolation_level == 'onedata'
+  become_user: '{{ galaxy_user }}'
+  become: true
+
 # LUKS format external volume
 - include: luks.yml
-  when: isolation_level == "encryption" 
-  become_user: "{{ galaxy_user }}"
+  when: isolation_level == 'encryption'
+  become_user: '{{ galaxy_user }}'
   become: true
