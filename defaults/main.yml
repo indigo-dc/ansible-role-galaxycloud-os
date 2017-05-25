@@ -12,7 +12,7 @@ galaxy_FS_path: /home/galaxy
 galaxy_directory: galaxy
 
 # Galaxy install path
-galaxy_install_path: "{{galaxy_FS_path}}/{{galaxy_directory}}"
+galaxy_install_path: "{{ galaxy_FS_path }}/{{ galaxy_directory }}"
 
 # Log directory
 galaxy_log_path: "/var/log/galaxy"
@@ -21,7 +21,7 @@ galaxy_log_path: "/var/log/galaxy"
 export_dir: "/export"
 
 # Galaxy instance url
-galaxy_instance_url: "http://{{ansible_default_ipv4.address}}/galaxy/"
+galaxy_instance_url: "http://{{ ansible_default_ipv4.address }}/galaxy/"
 
 # Galaxy instance ssh public key
 galaxy_instance_key_pub: ""
@@ -34,14 +34,15 @@ GALAXY_ADMIN_EMAIL: "admin@server.com"
 #________________________________
 # Isolation specific vars
 #
-# 1. open ---------> IaaS block storage volume is attached
+# 1. IaaS ---------> IaaS block storage volume is attached
 # 2. onedata ------> OneData volume is mounted
 # 3. encryption ---> IaaS block storage volume encrypted with AES is mounted
 
-isolation_level: "open"
+os_storage: "IaaS"
 
 #________________________________
-# 1. open
+# 1. IaaS
+# IaaS block storage volume is attached to the VM.
 
 #________________________________
 # 2. onedata

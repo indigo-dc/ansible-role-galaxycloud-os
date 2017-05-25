@@ -10,12 +10,12 @@
 
 # Use Onedata space as default storage
 - include: onedata.yml
-  when: isolation_level == 'onedata'
+  when: os_storage == 'onedata'
   become_user: '{{ galaxy_user }}'
   become: true
 
 # LUKS format external volume
 - include: luks.yml
-  when: isolation_level == 'encryption'
+  when: os_storage == 'encryption'
   become_user: '{{ galaxy_user }}'
   become: true
