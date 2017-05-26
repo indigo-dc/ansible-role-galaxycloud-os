@@ -28,4 +28,4 @@
   become_method: sudo
 
 - name: Mount Onedata Galaxy Data space
-  shell: 'oneclient -H {{ userdata_provider }} -t {{ userdata_token }} {{ export_dir }} --insecure'
+  shell: 'oneclient -H {{ userdata_provider }} -t {{ userdata_token }} {{ export_dir }} --insecure -o nonempty'
