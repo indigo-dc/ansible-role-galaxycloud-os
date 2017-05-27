@@ -50,18 +50,7 @@
 #______________________________________
 # Create directories
 
-- name: Create log directory
-  file:
-    path: '{{ item  }}'
-    state: directory
-    owner: '{{ galaxy_user }}'
-    group: '{{ galaxy_user }}'
-  with_items:
-    - '{{ galaxy_log_path }}'
-    - '{{ export_dir }}'
-    - '/etc/galaxy'
-  become_user: root
-  become_method: sudo
+- include: path.yml
 
 #______________________________________
 # Set sudo autocomplete
