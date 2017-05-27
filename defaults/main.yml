@@ -26,6 +26,9 @@ galaxy_instance_url: "http://{{ ansible_default_ipv4.address }}/galaxy/"
 # Galaxy instance ssh public key
 galaxy_instance_key_pub: ""
 
+# Galaxy virtual elastic cluster support: Currently supported local and slurm
+galaxy_lrms: local
+
 #________________________________
 # Galaxy administrator e-mail address
 
