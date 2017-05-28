@@ -5,6 +5,10 @@
     export_dir: /home/galaxy
   when: galaxy_lrms == "slurm"
 
+- set_fact:
+    tool_deps_path: '{{ export_dir }}/{{ userdata_space }}/tool_deps'
+  when: os_storage == 'onedata' 
+
 - name: Create directories
   file:
     path: '{{ item }}'
