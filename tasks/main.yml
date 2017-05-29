@@ -2,9 +2,6 @@
 # Main tasks file for indigo-dc.galaxycloud-os
 # Advanced storage configuration
 
-# Create directories
-- include: path.yml
-
 # Users rules
 - include: user.yml
 
