@@ -48,11 +48,6 @@
   when: ansible_os_family == "Debian"
 
 #______________________________________
-# Create directories
-
-- include: path.yml
-
-#______________________________________
 # Set sudo autocomplete
 
 - name: Set sudo autocomplete

@@ -1,12 +1,51 @@
 ---
 # Create directories
 
-- set_fact:
-    export_dir: /home/galaxy
-  when: galaxy_lrms == "slurm"
+#______________________________________
+# IaaS and Ecryption (default) path configuration
+#
+# Mountpoint: /export
+# Tool dependency dir: /export/tool_deps
+# Conda dir: /export/tool_deps/_conda
+# Job working dir: /export/job_work_dir
+# Galaxy database dir (galaxy_db_dir): /export/galaxy/database
+
+
+#______________________________________
+# Cluster path configuration
+#
+# {{ export_dir }} is only for data
+# Mountpoint: /home/galaxy/db
+# Tool dependency dir: /home/galaxy/db/tool_deps
+# Conda dir: /home/galaxy/db/_conda
+# Job working dir: /home/galaxy/db/job_work
+# Galaxy database dir (galaxy_db_dir): /home/galaxy/db
 
 - set_fact:
+    export_dir: '/home/galaxy/db'
+    tool_deps_path: '{{ export_dir }}/tool_deps'
+    conda_prefix: '{{ export_dir }}/_conda'
+    job_work_dir: '{{ export_dir }}/job_work'
+    galaxy_db_dir: '{{ export_dir }}'
+  when: galaxy_lrms == "slurm"
+
+#______________________________________
+# Onedata path configuration
+#
+# Warning ! The space name cannot exceed 8 char, e.g. "galaxy"!
+# Space mountpoint: /export
+# Userdata dir: /export/galaxy
+# Tool dependency dir: /export/galaxy/tool_deps
+# Conda dir: /export/galaxy/_conda
+# Job working dir: /export/galaxy/job_work
+# Galaxy database dir (galaxy_db_dir): /export/galaxy/database
+
+- set_fact:
+    export_dir: '/export'
     tool_deps_path: '{{ export_dir }}/{{ userdata_space }}/tool_deps'
+    conda_prefix: '{{ export_dir }}/{{ userdata_space }}/_conda'
+    job_work_dir: '{{ export_dir }}/{{ userdata_space }}/job_work'
+    galaxy_db_dir: '{{ export_dir }}/{{ userdata_space }}/database'
   when: os_storage == 'onedata' 
 
 - name: Create directories
