@@ -32,6 +32,8 @@
     shell: /bin/bash
     groups: adm,wheel,systemd-journal
     uid: '{{ GALAXY_UID }}'
+    createhome: yes
+    home: /home/galaxy
     skeleton: yes
   when: ansible_os_family == "RedHat"
 
