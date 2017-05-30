@@ -32,9 +32,6 @@
     shell: /bin/bash
     groups: adm,wheel,systemd-journal
     uid: '{{ GALAXY_UID }}'
-    createhome: yes
-    home: '/home/{{ galaxy_user }}'
-    skeleton: yes
   when: ansible_os_family == "RedHat"
 
 - name: Create user {{galaxy_user}} on the server | Ubuntu
