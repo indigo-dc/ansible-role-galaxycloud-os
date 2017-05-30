@@ -29,6 +29,27 @@
     galaxy_db_dir: '{{ export_dir }}'
   when: galaxy_lrms == "slurm"
 
+- name: Create directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ galaxy_user }}'
+    group: '{{ galaxy_user }}'
+  with_items:
+    - '{{ galaxy_FS_path }}' # set /home/galaxy permissions
+    - '{{ export_dir }}'
+    - '{{ tool_deps_path }}'
+  become_user: root
+  become_method: sudo
+  when: galaxy_lrms == "slurm"
+
+- name: Copy /etc/skel files to home directory
+  copy:
+    src: /etc/skel/
+    dest: '{{ galaxy_FS_path }}/'
+    owner: '{{ galaxy_user }}'
+    group: '{{ galaxy_user }}' 
+
 #______________________________________
 # Onedata path configuration
 #
@@ -61,4 +82,4 @@
     - '{{ tool_deps_path }}'
   become_user: root
   become_method: sudo
-
+  when: galaxy_lrms == "local"
