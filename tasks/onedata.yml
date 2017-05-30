@@ -34,7 +34,7 @@
   file:
     path: '{{ tool_deps_path }}'
     state: directory
-    owner: '{{ galaxy_user }}'
-    group: '{{ galaxy_user }}'
+  #  owner: '{{ galaxy_user }}'
+  #  group: '{{ galaxy_user }}'
   #become_user: root
   #become_method: sudo
