@@ -29,3 +29,12 @@
 
 - name: Mount Onedata Galaxy Data space
   shell: 'oneclient -H {{ userdata_provider }} -t {{ userdata_token }} {{ export_dir }} --insecure -o nonempty'
+
+- name: Create {{ tool_deps_path }} directory
+  file:
+    path: '{{ tool_deps_path }}'
+    state: directory
+    owner: '{{ galaxy_user }}'
+    group: '{{ galaxy_user }}'
+  #become_user: root
+  #become_method: sudo

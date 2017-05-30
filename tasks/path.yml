@@ -50,7 +50,7 @@
     group: '{{ galaxy_user }}'
   with_items:
     - '{{ export_dir }}'
-    - '{{ tool_deps_path }}'
+    #- '{{ tool_deps_path }}' # do not create it here... create after mounting onedata space
   become_user: root
   become_method: sudo
   when: galaxy_lrms == "local" and os_storage == 'onedata'
