@@ -51,6 +51,7 @@
     - '{{ export_dir }}'
     - '{{ onedata_dir }}'
     - '{{ tool_deps_path }}' # do not create it here... create after mounting onedata space
+    - '{{ nginx_upload_store_path }}'
   become_user: root
   become_method: sudo
   when: galaxy_lrms == "local" and os_storage == 'onedata'
