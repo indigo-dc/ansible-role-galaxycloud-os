@@ -37,10 +37,10 @@
 - set_fact:
     export_dir: '/export'
     tool_deps_path: '{{ export_dir }}/{{ userdata_space }}/tool_deps'
-    conda_prefix: '{{ export_dir }}/{{ userdata_space }}/_conda'
     job_work_dir: '{{ export_dir }}/{{ userdata_space }}/job_work'
     galaxy_db_dir: '{{ export_dir }}/{{ userdata_space }}/database'
-    nginx_upload_store_path: '{{ galaxy_FS_path }}/nginx_upload_store_path'
+    conda_prefix: '{{ galaxy_FS_pat }}/_conda'
+    nginx_upload_store_path: '{{ galaxy_FS_path }}/tmp/nginx_upload_store_path'
   when: galaxy_lrms == "local" and os_storage == 'onedata'
 
 - name: Create directories
