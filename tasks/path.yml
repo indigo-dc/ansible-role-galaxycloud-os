@@ -26,14 +26,15 @@
 #______________________________________
 # Onedata path configuration
 #
-# Warning ! The space name cannot exceed 8 char, e.g. "galaxy"!
 # Space mountpoint: /export
-# Userdata dir: /export/galaxy
-# Tool dependency dir: /export/galaxy/tool_deps
-# Conda dir: /export/galaxy/_conda
-# Job working dir: /export/galaxy/job_work
+# Userdata dir: /export/<onedata_space_name>
 # Galaxy database dir (galaxy_db_dir): /export/galaxy/database
-# nginx_upload_store_path: /home/galaxy/nginx_upload_store_path nginx can't access to /export/galaxy/database/tmp/nginx_upload_store_path due to onedat permissions
+# Job working dir: /export/galaxy/job_work
+# External volume mountpoint: /data
+# Tool dependency dir: /data/tool_deps
+# Conda dir: /data/_conda
+# nginx_upload_store_path: /data/tmp/nginx_upload_store_path nginx can't access to <onedata_space_name>/database/tmp/nginx_upload_store_path due to onedata permissions management
+
 - set_fact:
     export_dir: '/export'
     galaxy_db_dir: '{{ export_dir }}/{{ userdata_space }}/database'
@@ -51,7 +52,8 @@
     group: '{{ galaxy_user }}'
   with_items:
     - '{{ export_dir }}'
-    #- '{{ tool_deps_path }}' # do not create it here... create after mounting onedata space
+    - '/data'
+    - '{{ tool_deps_path }}' # do not create it here... create after mounting onedata space
   become_user: root
   become_method: sudo
   when: galaxy_lrms == "local" and os_storage == 'onedata'
