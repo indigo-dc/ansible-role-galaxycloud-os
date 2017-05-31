@@ -28,7 +28,7 @@
   become_method: sudo
 
 - name: Mount Onedata Galaxy Data space
-  shell: 'oneclient -H {{ userdata_provider }} -t {{ userdata_token }} {{ export_dir }} --insecure -o nonempty'
+  shell: 'oneclient -H {{ userdata_provider }} -t {{ userdata_token }} {{ onedata_dir }} --insecure -o nonempty'
 
 #- name: Create {{ tool_deps_path }} directory
 #  file:
