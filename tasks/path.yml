@@ -36,11 +36,11 @@
 # nginx_upload_store_path: /home/galaxy/nginx_upload_store_path nginx can't access to /export/galaxy/database/tmp/nginx_upload_store_path due to onedat permissions
 - set_fact:
     export_dir: '/export'
-    tool_deps_path: '{{ export_dir }}/{{ userdata_space }}/tool_deps'
-    job_work_dir: '{{ export_dir }}/{{ userdata_space }}/job_work'
     galaxy_db_dir: '{{ export_dir }}/{{ userdata_space }}/database'
-    conda_prefix: '{{ galaxy_FS_pat }}/_conda'
-    nginx_upload_store_path: '{{ galaxy_FS_path }}/tmp/nginx_upload_store_path'
+    job_work_dir: '{{ export_dir }}/{{ userdata_space }}/job_work'
+    tool_deps_path: '/data/tool_deps'
+    conda_prefix: '/data/_conda'
+    nginx_upload_store_path: '/data/tmp/nginx_upload_store_path'
   when: galaxy_lrms == "local" and os_storage == 'onedata'
 
 - name: Create directories
