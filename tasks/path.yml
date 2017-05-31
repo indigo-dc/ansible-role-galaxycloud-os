@@ -36,11 +36,8 @@
 # nginx_upload_store_path: /data/tmp/nginx_upload_store_path nginx can't access to <onedata_space_name>/database/tmp/nginx_upload_store_path due to onedata permissions management
 
 - set_fact:
-    export_dir: '/export'
-    galaxy_db_dir: '{{ export_dir }}/{{ userdata_space }}/database'
-    job_work_dir: '{{ export_dir }}/{{ userdata_space }}/job_work'
-    tool_deps_path: '/data/tool_deps'
-    conda_prefix: '/data/_conda'
+    galaxy_db_dir: '{{ onedata_dir }}/{{ userdata_space }}/database'
+    job_work_dir: '{{ onedata_dir }}/{{ userdata_space }}/job_work'
     nginx_upload_store_path: '/data/tmp/nginx_upload_store_path'
   when: galaxy_lrms == "local" and os_storage == 'onedata'
 
@@ -52,7 +49,7 @@
     group: '{{ galaxy_user }}'
   with_items:
     - '{{ export_dir }}'
-    - '/data'
+    - '{{ onedata_dir }}'
     - '{{ tool_deps_path }}' # do not create it here... create after mounting onedata space
   become_user: root
   become_method: sudo
