@@ -21,7 +21,7 @@
     option: '{{ item.option }}'
     value: '{{ item.value }}'
   with_items:
-    - { section: 'userdata', option: 'mountpoint', value: '{{ export_dir }}' }
+    - { section: 'userdata', option: 'mountpoint', value: '{{ onedata_dir }}' }
     - { section: 'userdata', option: 'provider', value: '{{ userdata_provider }}' }
     - { section: 'userdata', option: 'token', value: '{{ userdata_token }}' }
   become_user: root
