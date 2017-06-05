@@ -1,0 +1,122 @@
+---
+# Create directories
+
+#______________________________________
+# IaaS and Ecryption (default) path configuration
+#
+# Mountpoint: /export
+# Tool dependency dir: /export/tool_deps
+# Conda dir: /export/tool_deps/_conda
+# Job working dir: /export/job_work_dir
+# Galaxy database dir (galaxy_db_dir): /export/galaxy/database
+
+- name: Create directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ galaxy_user }}'
+    group: '{{ galaxy_user }}'
+  with_items:
+    - '{{ export_dir }}'
+    - '{{ tool_deps_path }}'
+  become_user: root
+  become_method: sudo
+  when: galaxy_lrms == "local" and (os_storage == 'Iaas' or os_storage == 'encryption')
+
+#______________________________________
+# Onedata path configuration
+#
+# Space mountpoint: /data
+# Userdata dir: /data/<onedata_space_name>
+# Galaxy database dir (galaxy_db_dir): /data/<onedata_space_name>/database
+# External volume mountpoint: /export
+# Job working dir: /export/job_work
+# Tool dependency dir: /export/tool_deps
+# Conda dir: /export/_conda
+# nginx_upload_store_path: /export/tmp/nginx_upload_store_path nginx can't access to <onedata_space_name>/database/tmp/nginx_upload_store_path due to onedata permissions management
+
+- set_fact:
+    galaxy_db_dir: '{{ onedata_dir }}/{{ userdata_space }}/database'
+    job_work_dir: '{{ onedata_dir }}/{{ userdata_space }}/job_work'
+    nginx_upload_store_path: '{{ export_dir }}/tmp/nginx_upload_store'
+  when: galaxy_lrms == "local" and os_storage == 'onedata'
+
+- name: Create directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ galaxy_user }}'
+    group: '{{ galaxy_user }}'
+  with_items:
+    - '{{ export_dir }}'
+    - '{{ onedata_dir }}'
+    - '{{ tool_deps_path }}' # do not create it here... create after mounting onedata space
+    - '{{ nginx_upload_store_path }}'
+  become_user: root
+  become_method: sudo
+  when: galaxy_lrms == "local" and os_storage == 'onedata'
+
+#______________________________________
+# Cluster path configuration
+#
+# {{ export_dir }} is only for data
+# Mountpoint: /home/galaxy/db
+# Tool dependency dir: /home/galaxy/db/tool_deps
+# Conda dir: /home/galaxy/db/_conda
+# Job working dir: /home/galaxy/db/job_work
+# Galaxy database dir (galaxy_db_dir): /home/galaxy/db
+
+- set_fact:
+    export_dir: '/home/galaxy/db'
+    tool_deps_path: '{{ export_dir }}/tool_deps'
+    conda_prefix: '{{ export_dir }}/_conda'
+    job_work_dir: '{{ export_dir }}/job_work'
+    galaxy_db_dir: '{{ export_dir }}'
+  when: galaxy_lrms == "slurm"
+
+- name: Set user home permissions, after mounting db directory
+  file:
+    path: '{{ galaxy_FS_path }}'
+    state: directory
+    owner: '{{ galaxy_user }}'
+    group: '{{ galaxy_user }}'
+    mode: 0700 # disable all user access to {{ galaxy_FS_path }} directory
+  become_user: root
+  become_method: sudo
+  when: galaxy_lrms == "slurm"
+
+- name: Create directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ galaxy_user }}'
+    group: '{{ galaxy_user }}'
+  with_items:
+    - '{{ export_dir }}'
+    - '{{ tool_deps_path }}'
+  become_user: root
+  become_method: sudo
+  when: galaxy_lrms == "slurm"
+
+- name: Copy /etc/skel files to home directory
+  copy:
+    src: /etc/skel/
+    dest: '{{ galaxy_FS_path }}/'
+    owner: '{{ galaxy_user }}'
+    group: '{{ galaxy_user }}' 
+  when: galaxy_lrms == "slurm"
+
+#______________________________________
+# Common path configuration
+
+- name: Create directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ galaxy_user }}'
+    group: '{{ galaxy_user }}'
+  with_items:
+    - '{{ galaxy_log_path }}'
+    - '/etc/galaxy'
+  become_user: root
+  become_method: sudo

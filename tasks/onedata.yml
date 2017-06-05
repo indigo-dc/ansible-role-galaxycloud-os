@@ -21,11 +21,20 @@
     option: '{{ item.option }}'
     value: '{{ item.value }}'
   with_items:
-    - { section: 'userdata', option: 'mountpoint', value: '{{ export_dir }}' }
+    - { section: 'userdata', option: 'mountpoint', value: '{{ onedata_dir }}' }
     - { section: 'userdata', option: 'provider', value: '{{ userdata_provider }}' }
     - { section: 'userdata', option: 'token', value: '{{ userdata_token }}' }
   become_user: root
   become_method: sudo
 
 - name: Mount Onedata Galaxy Data space
-  shell: 'oneclient -H {{ userdata_provider }} -t {{ userdata_token }} {{ export_dir }} --insecure'
+  shell: 'oneclient -H {{ userdata_provider }} -t {{ userdata_token }} {{ onedata_dir }} --insecure -o nonempty'
+
+#- name: Create {{ tool_deps_path }} directory
+#  file:
+#    path: '{{ tool_deps_path }}'
+#    state: directory
+  #  owner: '{{ galaxy_user }}'
+  #  group: '{{ galaxy_user }}'
+  #become_user: root
+  #become_method: sudo

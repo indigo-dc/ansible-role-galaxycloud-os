@@ -3,45 +3,33 @@ ansible-role-galaxycloud-os
 
 Storage configuration for indigo-dc.galaxycloud ansible role.
 
-1. open ---------> IaaS block storage volume is attached
+1. IaaS ---------> IaaS block storage volume is attached
 2. onedata ------> OneData volume is mounted
 3. encryption ---> IaaS block storage volume encrypted with AES is mounted
-
-Requirements
-------------
-
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
-
-Role Variables
---------------
-
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+The indigo-dc.oneclient role is installed if 'os_storage' is set to 'onedata'
 
 Example Playbook
 ----------------
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
     - hosts: localhost
       connection: local
       roles:
-        - { role: galaxycloud-os, GALAXY_ADMIN_EMAIL: "{{ galaxy_admin_mail }}", isolation_level: "encryption", galaxy_instance_key_pub: "{{ galaxy_instance_key_pub }}" }
+        - { role: galaxycloud-os, GALAXY_ADMIN_EMAIL: "{{ galaxy_admin_mail }}", os_storage: "encryption", galaxy_instance_key_pub: "{{ galaxy_instance_key_pub }}" }
 
 License
 -------
 
-Apache 2
+Apache Licence v2
+
+http://www.apache.org/licenses/LICENSE-2.0
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Marco Tanagaro (ma.tangaro_at_ibbe.cnr.it)

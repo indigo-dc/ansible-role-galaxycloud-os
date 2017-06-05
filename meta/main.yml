@@ -16,4 +16,5 @@ galaxy_info:
     - galaxy
     - web
 dependencies:
-  - { role: indigo-dc.oneclient, when: isolation_level == 'onedata' }
+  - role: indigo-dc.oneclient
+    when: os_storage == 'onedata'
