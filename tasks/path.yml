@@ -21,7 +21,7 @@
     - '{{ tool_deps_path }}'
   become_user: root
   become_method: sudo
-  when: galaxy_lrms == "local" and (os_storage == 'Iaas' or os_storage == 'encryption')
+  when: galaxy_lrms == "local" and (os_storage == 'IaaS' or os_storage == 'encryption')
 
 #______________________________________
 # Onedata path configuration
