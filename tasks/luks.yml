@@ -1,9 +1,13 @@
 ---
 # Recipe to encrypt external volume
 
+#______________________________________
+# CentOS 7
+
 - name: Install CentOS7 packages
-  yum: name={{item}}
-       state=present
+  yum:
+    name: '{{ item }}'
+    state: present
   with_items:
     - cryptsetup-luks
     - pv
@@ -11,19 +15,13 @@
   become_method: sudo
   when: ansible_os_family == "RedHat"
 
-- name: Install the 'Development tools' package group
-  yum: name="@Development tools"
-       state=present
-  become_user: root
-  become_method: sudo
-  when: ansible_os_family == "RedHat"
-
-#---
+#______________________________________
 # Ubuntu 14.04
 
 - name: Install Ubuntu packages
-  apt: name={{item}}
-       state=present
+  apt:
+    name: '{{ item }}'
+    state: present
   with_items:
     - cryptsetup
   become_user: root
@@ -31,16 +29,25 @@
   when: ansible_os_family == "Debian"
 
 
-#---
+#______________________________________
 # LUKSformat volume
 
 - name: Copy indigo-dc.galaxycloud-os scripts
-  template: src={{ item.script }} dest={{ item.destination }} mode=a+x
+  template:
+    src: '{{ item.script }}'
+    dest: '{{ item.destination }}'
+    mode: a+x
   with_items:
     - { script: 'fast_luks.j2', destination: '/usr/local/bin/fast-luks' }
     - { script: 'luksctl.j2', destination: '/usr/local/bin/luksctl' }
   become_user: root
   become_method: sudo
+
+- name: Set Virtualenv
+  lineinfile:
+    dest: '/home/{{ galaxy_user }}'/.bashrc
+    line: "sudo fast-luks"
+    state: present
 
 # check if /export is mountpoint before LUKS encryption
 - include: check_mountpoint.yml
@@ -85,3 +92,9 @@
 
 # check if {{ export_dir }} is a mountpoint after LUKS encryption
 - include: check_mountpoint.yml
+
+- name: Set Virtualenv
+  lineinfile:
+    dest: '/home/{{ galaxy_user }}'/.bashrc
+    line: "sudo fast-luks"
+    state: absent
