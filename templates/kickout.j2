@@ -1,4 +1,8 @@
 #!/bin/bash
 
+# This script kick out the user from the VM after luks format.
+# Needs to be sourced
+
 for i in {5..1};do echo -n "$i." && sleep 1; done
+echo -e '\nExiting.... Goodbye!'
 exit
