@@ -36,11 +36,21 @@ normal="\033[0m"
 
 #____________________________________
 # Print out intro banner
+
+# bash generate random 32 character alphanumeric string (upper and lowercase)
+
+NEW_PWD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
+
 function intro(){
-  echo -e "$yellow =========================================================$none"
-  echo -e "$green \tELIXIR-IIB encryption script - Alpha Version $normal"
-  echo -e "$yellow =========================================================$none"
+  echo -e "========================================================="
+  echo -e "\tELIXIR-IIB encryption script - Alpha Version "
+  echo -e ""
+  echo -e "A passowrd with at least 8 alphanumeric string is needed"
+  echo -e "Automatic random generated password: ${NEW_PWD}"
+  echo -e ""
+  echo -e "========================================================="
 }
+
 
 #____________________________________
 # Lock/UnLock Section

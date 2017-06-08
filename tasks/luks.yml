@@ -40,14 +40,18 @@
   with_items:
     - { script: 'fast_luks.j2', destination: '/usr/local/bin/fast-luks' }
     - { script: 'luksctl.j2', destination: '/usr/local/bin/luksctl' }
+    - { script: 'kickout.j2', destination: '/usr/local/bin/kickout' }
   become_user: root
   become_method: sudo
 
-- name: Set Virtualenv
+- name: Add luks scripts
   lineinfile:
-    dest: '/home/{{ galaxy_user }}/.bashrc'
-    line: 'sudo fast-luks'
+    dest: '{{ item.dest }}'
+    line: '{{ item.command }}'
     state: present
+  with_items:
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo fast-luks' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source /usr/local/bin/kickout' }
 
 # check if /export is mountpoint before LUKS encryption
 - include: check_mountpoint.yml
@@ -83,18 +87,23 @@
   register: crypt_device_register
 
 - name: Set permissions to {{ export_dir }} directory
-  file: path={{ export_dir }}
-        state=directory
-        owner={{ galaxy_user }}
-        group={{ galaxy_user }}
+  file:
+    path: '{{ export_dir }}'
+    state: directory
+    owner: '{{ galaxy_user }}'
+    group: '{{ galaxy_user }}'
   become_user: root
   become_method: sudo
 
 # check if {{ export_dir }} is a mountpoint after LUKS encryption
 - include: check_mountpoint.yml
 
-- name: Set Virtualenv
+- name: Remove automatic scripts
   lineinfile:
-    dest: '/home/{{ galaxy_user }}/.bashrc'
-    line: 'sudo fast-luks'
+    dest: '{{ item.dest }}'
+    line: '{{ item.command }}'
     state: absent
+  with_items:
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo fast-luks' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source /usr/local/bin/kickout' }
+
