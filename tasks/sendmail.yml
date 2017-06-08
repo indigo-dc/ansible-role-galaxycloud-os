@@ -25,6 +25,11 @@
     src: 'mail.html.j2'
     dest: '/tmp/mail.txt'
 
+- name: Copy instructions file
+  copy:
+    src: 'instructions.pdf'
+    dest: '/tmp/instructions.pdf'
+
 - name: Send mail to allert user. ONLY FOR TESTING, this is not passing gmail antispam filters
   mail:
     from: "indigo-test@indigo-datacloud.eu"
@@ -33,6 +38,7 @@
     body: '{{ lookup("file", "/tmp/mail.txt") }}'
     secure: always # will be enabled in Ansible 2.3
     subtype: html
+    attach: /tmp/instructions.pdf
   when: ansible_version >= "2.3.0.0"
 
 - name: Send mail to allert user. ONLY FOR TESTING, this is not passing gmail antispam filters
@@ -42,4 +48,5 @@
     subject: "ansible-role-galaxycloud-os report"
     body: '{{ lookup("file", "/tmp/mail.txt") }}'
     subtype: html
+    attach: /tmp/instructions.pdf
   when: ansible_version < "2.3.0.0"
