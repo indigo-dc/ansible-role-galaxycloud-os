@@ -26,4 +26,30 @@
     to: "{{ GALAXY_ADMIN_EMAIL }}"
     subject: "ansible-role-galaxycloud-os report"
     body: 'Please ssh into your Galaxy instance: ssh -i <private_key> galaxy@{{ ansible_default_ipv4.address }} and type "sudo fast_luks"'
-#    secure: always # will be enabled in Ansible 2.3
+    secure: always # will be enabled in Ansible 2.3
+  when: ansible_version >= "2.3.0.0"
+
+- name: Send mail to allert user. ONLY FOR TESTING, this is not passing gmail antispam filters
+  mail:
+    from: "indigo-test@indigo-datacloud.eu"
+    to: "{{ GALAXY_ADMIN_EMAIL }}"
+    subject: "ansible-role-galaxycloud-os report"
+    body: 'This is an automatically generated notification mail. 
+           YOU DO NOT NEED ANSWER TO THIS MESSAGE
+
+           You are requiring an Encrypted Galaxy server. To insert your passphrase you have to login on it through SSH
+
+           Please ssh into your Galaxy instance using the {{ galaxy_user }} user:
+           ssh -i <private_key> {{ galaxy_user}}@{{ ansible_default_ipv4.address }}
+
+           You will be automatically redirected to the encryptions script.
+
+           A password with at least 8 alphanumeric string is needed
+           There is no way to recover your password! Please save it!
+
+           You will be required to insert your password 3 times:
+           1. Enter passphrase
+           2. Verify passphrase
+           3. Unlock your volume
+           Finally the script will automatically close this connection.'
+  when: ansible_version < "2.3.0.0"
