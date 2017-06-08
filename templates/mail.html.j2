@@ -1,0 +1,48 @@
+<html xmlns="www.elixir-italy.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title></title>
+        <style></style>
+    </head>
+    <body>
+        <table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
+            <tr>
+                <td align="center" valign="top">
+                    <table border="0" cellpadding="20" cellspacing="0" width="600" id="emailContainer">
+                        <tr>
+                            <img src="https://raw.githubusercontent.com/indigo-dc/ansible-role-galaxycloud-os/devel/files/elixir_italy_white_background.png" width="200" height="150" align="center" alt="encryption">
+                            <td valign="top" >
+                                Dear User,<BR>
+                                This is an automatically generated notification mail<BR>
+                                YOU DO NOT NEED ANSWER TO THIS MESSAGE<BR>
+                                <p>
+                                You are requiring an Encrypted Galaxy server. To insert your passphrase you have to login on it through SSH<BR>
+                                <p>
+                                Please ssh into your Galaxy instance using the {{ galaxy_user }} user:<BR>
+                                ssh -i <private_key> {{ galaxy_user}}@{{ ansible_default_ipv4.address }}<BR>
+                                <p>
+                                You will be automatically redirected to the encrypt script.<BR>
+                                <p>
+                                A password with at least 8 alphanumeric string is needed<BR>
+                                There is no way to recover your password! Please save it!<BR>
+                                <p>
+                                You will be required to insert your password 3 times:<BR>
+                                1. Enter passphrase<BR>
+                                2. Verify passphrase<BR>
+                                3. Unlock your volume<BR>
+                                <p>
+                                Finally the script will automatically close this connection.<BR>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="center" valign="top">
+                                Kind Regards <BR>
+                            </td>
+                        </tr>
+
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>
