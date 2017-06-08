@@ -34,8 +34,8 @@
     from: "indigo-test@indigo-datacloud.eu"
     to: "{{ GALAXY_ADMIN_EMAIL }}"
     subject: "ansible-role-galaxycloud-os report"
-    body: 'This is an automatically generated notification mail. 
-           YOU DO NOT NEED ANSWER TO THIS MESSAGE
+    body: 'This is an automatically generated notification mail.\n 
+           YOU DO NOT NEED ANSWER TO THIS MESSAGE \n
 
            You are requiring an Encrypted Galaxy server. To insert your passphrase you have to login on it through SSH
 
