@@ -36,16 +36,21 @@ normal="\033[0m"
 
 #____________________________________
 # Print out intro banner
-
 # bash generate random 32 character alphanumeric string (upper and lowercase)
 
 NEW_PWD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
+
+until [[ $NEW_PWD =~ ^([a-zA-Z+]+[0-9+]+)$ ]]; do
+  NEW_PWD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
+done
 
 function intro(){
   echo -e "========================================================="
   echo -e "\tELIXIR-IIB encryption script - Alpha Version "
   echo -e ""
   echo -e "A passowrd with at least 8 alphanumeric string is needed"
+  echo -e "There's no way to recover your password! Please save it!"
+  echo -e ""
   echo -e "Automatic random generated password: ${NEW_PWD}"
   echo -e ""
   echo -e "========================================================="
@@ -332,7 +337,7 @@ function save_info(){
 function __end(){
   # send signal to unclok waiting condition for automation software (e.g Ansible)
   echo -e "LUKS encryption completed." > $SUCCESS_FILE
-  echo -e "\n$green Successful. Please exit by the VM/Docker. Galaxy will be automatically installed! $none"
+  echo -e "\n$green Successful. You will be automatically kicked out by this server. Galaxy will be automatically installed! $none"
 }
 
 
