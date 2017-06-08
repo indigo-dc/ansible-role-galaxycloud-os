@@ -32,6 +32,7 @@
     subject: "ansible-role-galaxycloud-os report"
     body: '{{ lookup("file", "/tmp/mail.txt") }}'
     secure: always # will be enabled in Ansible 2.3
+    subtype: html
   when: ansible_version >= "2.3.0.0"
 
 - name: Send mail to allert user. ONLY FOR TESTING, this is not passing gmail antispam filters
@@ -40,4 +41,5 @@
     to: "{{ GALAXY_ADMIN_EMAIL }}"
     subject: "ansible-role-galaxycloud-os report"
     body: '{{ lookup("file", "/tmp/mail.txt") }}'
+    subtype: html
   when: ansible_version < "2.3.0.0"
