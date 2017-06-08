@@ -45,8 +45,8 @@
 
 - name: Set Virtualenv
   lineinfile:
-    dest: '/home/{{ galaxy_user }}'/.bashrc
-    line: "sudo fast-luks"
+    dest: '/home/{{ galaxy_user }}/.bashrc'
+    line: 'sudo fast-luks'
     state: present
 
 # check if /export is mountpoint before LUKS encryption
@@ -95,6 +95,6 @@
 
 - name: Set Virtualenv
   lineinfile:
-    dest: '/home/{{ galaxy_user }}'/.bashrc
-    line: "sudo fast-luks"
+    dest: '/home/{{ galaxy_user }}/.bashrc'
+    line: 'sudo fast-luks'
     state: absent
