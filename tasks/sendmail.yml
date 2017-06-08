@@ -30,7 +30,7 @@
     from: "indigo-test@indigo-datacloud.eu"
     to: "{{ GALAXY_ADMIN_EMAIL }}"
     subject: "ansible-role-galaxycloud-os report"
-    body: "{{ lookup('file', '/tmp/email.txt') }}"
+    body: "{{ lookup('file', '/tmp/mail.txt') }}"
     secure: always # will be enabled in Ansible 2.3
   when: ansible_version >= "2.3.0.0"
 
@@ -39,5 +39,5 @@
     from: "indigo-test@indigo-datacloud.eu"
     to: "{{ GALAXY_ADMIN_EMAIL }}"
     subject: "ansible-role-galaxycloud-os report"
-    body: "{{ lookup('file', '/tmp/email.txt') }}"
+    body: "{{ lookup('file', '/tmp/mail.txt') }}"
   when: ansible_version < "2.3.0.0"
