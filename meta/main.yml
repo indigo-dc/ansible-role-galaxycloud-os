@@ -16,5 +16,7 @@ galaxy_info:
     - galaxy
     - web
 dependencies:
+  - pre_tasks:
+      - shell: "echo {{ os_storage }} > /home/centos/ciao"
   - role: indigo-dc.oneclient
     when: os_storage == 'onedata'
