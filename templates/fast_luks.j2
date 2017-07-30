@@ -6,10 +6,12 @@
 # Author: Marco Tangaro
 # Mail: ma.tangaro@gmail.com 
 #
-# Please find the original script here: https://github.com/JohnTroony/LUKS-OPs/blob/master/luks-ops.sh
+# Please find the original script here:
+# https://github.com/JohnTroony/LUKS-OPs/blob/master/luks-ops.sh
 # All credits to John Troon.
 #
-# The script is able to detect the $device only if it is mounted. This is by default for our-case.
+# The script is able to detect the $device only if it is mounted.
+# This is by default for our use-case.
 
 ################################################################################
 # VARIABLES
@@ -62,7 +64,6 @@ function intro(){
   echo -e "========================================================="
 }
 
-
 #____________________________________
 # Lock/UnLock Section
 # http://wiki.bash-hackers.org/howto/mutex
@@ -76,7 +77,6 @@ ENO_SUCCESS=0; ETXT[0]="ENO_SUCCESS"
 ENO_GENERAL=1; ETXT[1]="ENO_GENERAL"
 ENO_LOCKFAIL=2; ETXT[2]="ENO_LOCKFAIL"
 ENO_RECVSIG=3; ETXT[3]="ENO_RECVSIG"
-
 
 function lock(){
 
@@ -134,10 +134,8 @@ function unlock(){
         exit ${ENO_RECVSIG}' 1 2 3 15
 }
 
-
 #___________________________________
 function info(){
-  
   echo -e "#LUKS header information for $device"
   echo -e "#luks-${now}\n"
   
@@ -150,14 +148,12 @@ function info(){
   echo "MAPPER='/dev/mapper/${cryptdev}'"
   echo "MOUNTPOINT='${mountpoint}'"
   echo "FILESYSTEM='${filesystem}'"
-
 }
 
 #____________________________________
 # Install cryptsetup
 
 function install_cryptsetup(){
-
   if [[ -r /etc/os-release ]]; then
       . /etc/os-release
       echo $ID
@@ -171,7 +167,6 @@ function install_cryptsetup(){
   else
       echo "Not running a distribution with /etc/os-release available"
   fi
-
 }
 
 #____________________________________
@@ -180,9 +175,8 @@ function install_cryptsetup(){
 function check_cryptsetup(){
   echo -e "\n==================================="
   echo -e "Check if the required applications are installed..."
-  type -P dmsetup &>/dev/null || echo -e "$red dmestup is not installed. Installing... $noine" #TODO add install device_mapper
+  type -P dmsetup &>/dev/null || echo -e "$red dmestup is not installed. Installing... $none" #TODO add install device_mapper
   type -P cryptsetup &>/dev/null || { echo -e "$red cryptsetup is not installed. Installing... $none"; install_cryptsetup  >> "$LOGFILE" 2>&1; echo -e "$green cryptsetup installed! $none"; }
-
 }
 
 #____________________________________
@@ -208,7 +202,6 @@ function check_vol(){
   fi
 }
 
-
 #____________________________________
 # Umount volume
 
@@ -218,7 +211,6 @@ function umount_vol(){
   umount $mountpoint
   echo "$device umounted, ready for encryption!"
 }
-
 
 #____________________________________
 function setup_device(){
@@ -243,7 +235,6 @@ function setup_device(){
   fi
 }
 
-
 #____________________________________
 function open_device(){
   echo -e "\n==================================="
@@ -263,14 +254,12 @@ function open_device(){
   fi
 }
 
-
 #____________________________________
 function encryption_status(){
   echo "==================================="
   echo "check $cryptdev status with cryptseutp status"
   cryptsetup -v status $cryptdev
 }
-
 
 #____________________________________
 # Create block file
@@ -292,7 +281,6 @@ function wipe_data(){
   echo -e "Wiping done."
 }
 
-
 #____________________________________
 function create_fs(){
   echo -e "\n==================================="
@@ -306,20 +294,15 @@ function create_fs(){
     unlock
     exit 1
   fi
-
 }
-
 
 #____________________________________
 function mount_vol(){
-
   echo -e "\n==================================="
   echo -e "Mounting encrypted device..."
   mount /dev/mapper/${cryptdev} $mountpoint
   df -Hv >> "$LOGFILE" 2>&1
-
 }
-
 
 #____________________________________
 function save_info(){
@@ -353,20 +336,17 @@ function save_info(){
   cryptsetup luksDump $device >> "$LOGFILE" 2>&1
 }
 
-
 #____________________________________
-function __end(){
+function end_encrypt_procedure(){
   # send signal to unclok waiting condition for automation software (e.g Ansible)
   echo -e "LUKS encryption completed." > $SUCCESS_FILE
   echo -e "\n$green Successful. You will be automatically kicked out by this server. Galaxy will be automatically installed! $none"
 }
 
-
 #____________________________________
 #FIXME cryptsetup (temporary version)
 
 function encrypt(){
-
   # Check which virtual volume is mounted to /export
   check_vol
 
@@ -393,10 +373,7 @@ function encrypt(){
 
   # Print logs and luks information file on /etc
   save_info
-
 }
-
-
 
 ################################################################################
 # Main script
@@ -414,11 +391,9 @@ cryptdev='crypt'
 mountpoint='/export'
 filesystem='ext4'
 
-#---
 # Create lock file. Ensure only single instance running.
 lock >> "$LOGFILE" 2>&1
 
-#---
 # Print intro
 intro
 
@@ -428,12 +403,9 @@ if [ $# -lt 1 ]; then
   info >> "$LOGFILE" 2>&1
 fi
 
-
 # Parse CLI options
-
 while [ $# -gt 0 ]
 do
-
   case $1 in
     -c|--cipher) cipher_algorithm="$2"; shift;;
     
@@ -471,25 +443,20 @@ if [[ -n $1 ]]; then
     tail -1 $1
 fi
 
-#---
 # Print Help
 if [ "${HELP}" = "YES" ]
   then
     echo -e "$green Print help... $normal"
 fi
 
-#---
 # Check if the required applications are installed
 check_cryptsetup
 
-#---
 # Encrypt volume
 encrypt
 
-#---
 # LUKS encryption finished. Print end dialogue.
-__end
+end_encrypt_procedure
 
-#---
 # Unlock once done.
 unlock >> "$LOGFILE" 2>&1
