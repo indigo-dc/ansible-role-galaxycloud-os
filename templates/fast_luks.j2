@@ -323,15 +323,30 @@ function mount_vol(){
 
 #____________________________________
 function save_info(){
+  # Create crypdev ini file
+  luks_cryptdev_file='/etc/galaxy/luks-cryptdev.ini'
 
-  # Create crypdev conf file
-  luks_cryptdev_file='/etc/luks-cryptdev.conf'
-  echo -e "# This file has been generated using fast_luks.sh script: https://github.com/mtangaro/galaxycloud-testing/blob/master/fast_luks.sh" > ${luks_cryptdev_file}
+  echo -e "# This file has been generated using fast_luks.sh script" > ${luks_cryptdev_file}
+  echo -e "# https://github.com/mtangaro/galaxycloud-testing/blob/master/fast_luks.sh" > ${luks_cryptdev_file}
   echo -e "# The device name could change after reboot, please use UUID instead." >> ${luks_cryptdev_file}
-  echo -e "# LUKS provides a UUID \(Universally Unique Identifier\) \for each device. This, unlike the device name \(eg: /dev/vdb\), is guaranteed to remain constant as long as the LUKS header remains intact.\n" >> ${luks_cryptdev_file}
-  info >> ${luks_cryptdev_file}
-  uuid=$(cryptsetup luksUUID ${device})
-  echo -e "UUID='${uuid}'" >> ${luks_cryptdev_file}
+  echo -e "# LUKS provides a UUID \(Universally Unique Identifier\) \for each device." > ${luks_cryptdev_file}
+  echo -e "# This, unlike the device name \(eg: /dev/vdb\), is guaranteed to remain constant" > ${luks_cryptdev_file}
+  echo -e "# as long as the LUKS header remains intact." >> ${luks_cryptdev_file}
+  echo -e "#" >> ${luks_cryptdev_file}
+  echo -e "# LUKS header information for $device" >> ${luks_cryptdev_file}
+  echo -e "# luks-${now}\n" >> ${luks_cryptdev_file}
+  
+  echo "[luks]" >> ${luks_cryptdev_file}
+  echo "cipher_algorithm = ${cipher_algorithm}" >> ${luks_cryptdev_file}
+  echo "hash_algorithm = ${hash_algorithm}" >> ${luks_cryptdev_file}
+  echo "keysize = ${keysize}" >> ${luks_cryptdev_file}
+  echo "device = ${device}" >> ${luks_cryptdev_file}
+  echo "uuid = $(cryptsetup luksUUID ${device})" >> ${luks_cryptdev_file}
+  echo "cryptdev = ${cryptdev}" >> ${luks_cryptdev_file}
+  echo "mapper = /dev/mapper/${cryptdev}" >> ${luks_cryptdev_file}
+  echo "mountpoint = ${mountpoint}" >> ${luks_cryptdev_file}
+  echo "filesystem = ${filesystem}" >> ${luks_cryptdev_file}
+  echo "uuid = $(cryptsetup luksUUID ${device})" >> ${luks_cryptdev_file}
 
   # Update Log file
   dmsetup info /dev/mapper/${cryptdev} >> "$LOGFILE" 2>&1
