@@ -1,5 +1,5 @@
 ---
-- name: Install mailutils
+- name: '[EL] Install mailutils'
   yum: name={{item}}
        state=present
   with_items:
@@ -8,7 +8,7 @@
   become_method: sudo
   when: ansible_os_family == "RedHat"
 
-- name: Install mailutils
+- name: '[Ubuntu] Install mailutils'
   apt: name={{item}}
        state=present
   with_items:
@@ -18,7 +18,7 @@
   when: ansible_os_family == "Debian"
 
 - name: Send mail using linux mail client
-  shell: 'echo "Please ssh into your Galaxy instance: ssh -i <private_key> galaxy@{{ ansible_default_ipv4.address }} and type <sudo fast_luks>" | mail -s "Ansible Report" {{ GALAXY_ADMIN_EMAIL }}'
+  shell: 'echo "Please ssh into your Galaxy instance: ssh -i <private_key> galaxy@{{ ansible_default_ipv4.address }} and and follow the instructions " | mail -s "{{ mail_subject}}" {{ GALAXY_ADMIN_EMAIL }} -- -f {{ mail_from }}'
 
 - name: Copy indigo-dc.galaxycloud-os scripts
   template:
@@ -32,21 +32,21 @@
 
 - name: Send mail to allert user. ONLY FOR TESTING, this is not passing gmail antispam filters
   mail:
-    from: "indigo-test@indigo-datacloud.eu"
+    from: '{{ mail_from }}'
     to: "{{ GALAXY_ADMIN_EMAIL }}"
-    subject: "ansible-role-galaxycloud-os report"
+    subject: '{{ mail_subject }}'
     body: '{{ lookup("file", "/tmp/mail.txt") }}'
     secure: always # will be enabled in Ansible 2.3
     subtype: html
     attach: /tmp/instructions.pdf
-  when: ansible_version >= "2.3.0.0"
+  when: ansible_version.full >= "2.3.0.0"
 
 - name: Send mail to allert user. ONLY FOR TESTING, this is not passing gmail antispam filters
   mail:
-    from: "indigo-test@indigo-datacloud.eu"
+    from: '{{ mail_from }}'
     to: "{{ GALAXY_ADMIN_EMAIL }}"
-    subject: "ansible-role-galaxycloud-os report"
+    subject: '{{ mail_subject }}'
     body: '{{ lookup("file", "/tmp/mail.txt") }}'
     subtype: html
     attach: /tmp/instructions.pdf
-  when: ansible_version < "2.3.0.0"
+  when: ansible_version.full < "2.3.0.0"
