@@ -30,18 +30,7 @@
     src: 'instructions.pdf'
     dest: '/tmp/instructions.pdf'
 
-- name: Send mail to allert user. ONLY FOR TESTING, this is not passing gmail antispam filters
-  mail:
-    from: '{{ mail_from }}'
-    to: "{{ GALAXY_ADMIN_EMAIL }}"
-    subject: '{{ mail_subject }}'
-    body: '{{ lookup("file", "/tmp/mail.txt") }}'
-    secure: always # will be enabled in Ansible 2.3
-    subtype: html
-    attach: /tmp/instructions.pdf
-  when: ansible_version.full >= "2.3.0.0"
-
-- name: Send mail to allert user. ONLY FOR TESTING, this is not passing gmail antispam filters
+- name: Send mail to alert user. ONLY FOR TESTING, this is not passing gmail antispam filters
   mail:
     from: '{{ mail_from }}'
     to: "{{ GALAXY_ADMIN_EMAIL }}"
@@ -49,4 +38,3 @@
     body: '{{ lookup("file", "/tmp/mail.txt") }}'
     subtype: html
     attach: /tmp/instructions.pdf
-  when: ansible_version.full < "2.3.0.0"
