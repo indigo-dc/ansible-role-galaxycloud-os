@@ -67,6 +67,9 @@ userdata_space: 'galaxy'
 encrypt_ini_file: '{{ config_files_path }}/luks-cryptdev.ini'
 wait_timeout: 18000 # wait for 5 hous FIXME
 
+mail_from: "GalaxyCloud@elixir-italy.org"
+mail_subject: "[ELIXIR-ITALY] GalaxyCloud encrypt password"
+
 cipher_algorithm: 'aes-xts-plain64'
 keysize: '256'
 hash_algorithm: 'sha256'
