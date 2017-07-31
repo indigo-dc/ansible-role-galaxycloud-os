@@ -306,7 +306,7 @@ function mount_vol(){
 #____________________________________
 function save_info(){
   # Create crypdev ini file
-  luks_cryptdev_file='/etc/galaxy/luks-cryptdev.ini'
+  luks_cryptdev_file='{{ encrypt_ini_file }}'
 
   echo -e "# This file has been generated using fast_luks.sh script" > ${luks_cryptdev_file}
   echo -e "# https://github.com/mtangaro/galaxycloud-testing/blob/master/fast_luks.sh" > ${luks_cryptdev_file}
