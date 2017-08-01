@@ -348,7 +348,8 @@ function encrypt(){
   encryption_status >> "$LOGFILE" 2>&1
   
   # Wipe data for security
-  wipe_data
+  # WARNING This is going take time, depending on VM storage. Currently commented out
+  #wipe_data
 
   # Create filesystem
   create_fs
