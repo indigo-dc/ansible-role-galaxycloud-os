@@ -48,7 +48,7 @@ done
 
 function intro(){
   echo -e "========================================================="
-  echo -e "\tELIXIR-IIB encryption script - Alpha Version "
+  echo -e "\tELIXIR-IIB encryption script"
   echo -e ""
   echo -e "A password with at least 8 alphanumeric string is needed"
   echo -e "There's no way to recover your password! Please save it!"
@@ -60,7 +60,7 @@ function intro(){
   echo -e "2. Verify passphrase"
   echo -e "3. Unlock your volume"
   echo -e ""
-  echo -e "Finally the script will automatically close this connection."
+  echo -e "The connection will be  automatically closed."
   echo -e "========================================================="
 }
 
@@ -173,7 +173,7 @@ function install_cryptsetup(){
 # Check cryptsetup installation
 
 function check_cryptsetup(){
-  echo -e "\n==================================="
+  echo -e "\n-----------------------------------"
   echo -e "Check if the required applications are installed..."
   type -P dmsetup &>/dev/null || echo -e "dmestup is not installed. Installing..." #TODO add install device_mapper
   type -P cryptsetup &>/dev/null || { echo -e "cryptsetup is not installed. Installing.."; install_cryptsetup  >> "$LOGFILE" 2>&1; echo -e "$green cryptsetup installed! $none"; }
