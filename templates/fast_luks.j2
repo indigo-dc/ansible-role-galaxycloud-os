@@ -133,26 +133,26 @@ function unlock(){
   # lock succeeded, install signal handlers before storing the PID just in case 
   # storing the PID fails
   trap 'ECODE=$?;
-        echo "$info [$STAT] Removing lock. Exit: ${ETXT[ECODE]}($ECODE)"  >> "$LOGFILE" 2>&1 
+        echo "$debug [$STAT] Removing lock. Exit: ${ETXT[ECODE]}($ECODE)"  >> "$LOGFILE" 2>&1 
         rm -rf "${LOCKDIR}"' 0
 
   # the following handler will exit the script upon receiving these signals
   # the trap on "0" (EXIT) from above will be triggered by this trap's "exit" command!
-  trap 'echo "$info [$STAT] Killed by signal."  >> "$LOGFILE" 2>&1 
+  trap 'echo "$debug [$STAT] Killed by signal."  >> "$LOGFILE" 2>&1 
         exit ${ENO_RECVSIG}' 1 2 3 15
 }
 
 #___________________________________
 function info(){
-  echo "$info [$STAT] LUKS header information for $device"
-  echo "$info [$STAT] Cipher algorithm: ${cipher_algorithm}"
-  echo "$info [$STAT] Hash algorithm${hash_algorithm}"
-  echo "$info [$STAT] Keysize: ${keysize}"
-  echo "$info [$STAT] Device: ${device}"
-  echo "$info [$STAT] Crypt device: ${cryptdev}"
-  echo "$info [$STAT] Mapper: /dev/mapper/${cryptdev}"
-  echo "$info [$STAT] Mountpoint: ${mountpoint}"
-  echo "$info [$STAT] File system: ${filesystem}"
+  echo "$debug [$STAT] LUKS header information for $device"
+  echo "$debug [$STAT] Cipher algorithm: ${cipher_algorithm}"
+  echo "$debug [$STAT] Hash algorithm${hash_algorithm}"
+  echo "$debug [$STAT] Keysize: ${keysize}"
+  echo "$debug [$STAT] Device: ${device}"
+  echo "$debug [$STAT] Crypt device: ${cryptdev}"
+  echo "$debug [$STAT] Mapper: /dev/mapper/${cryptdev}"
+  echo "$debug [$STAT] Mountpoint: ${mountpoint}"
+  echo "$debug [$STAT] File system: ${filesystem}"
 }
 
 #____________________________________
@@ -163,14 +163,14 @@ function install_cryptsetup(){
       . /etc/os-release
       echo $ID
       if [ "$ID" = "ubuntu" ]; then
-          echo "$debug [$STAT] Distribution: Ubuntu. Using apt"
+          echo "$info [$STAT] Distribution: Ubuntu. Using apt"
           apt-get install -y cryptsetup
       else
-          echo "$debug [$STAT] Distribution: CentOS. Using yum"
+          echo "$info [$STAT] Distribution: CentOS. Using yum"
           yum install -y cryptsetup-luks pv
       fi
   else
-      echo "$debug [$STAT]Not running a distribution with /etc/os-release available"
+      echo "$info [$STAT] Not running a distribution with /etc/os-release available"
   fi
 }
 
@@ -178,31 +178,27 @@ function install_cryptsetup(){
 # Check cryptsetup installation
 
 function check_cryptsetup(){
-  echo -e "$debug [$STAT]Check if the required applications are installed..."
-  type -P dmsetup &>/dev/null || echo -e "[$STAT] dmestup is not installed. Installing..." #TODO add install device_mapper
-  type -P cryptsetup &>/dev/null || { echo -e "[$STAT] cryptsetup is not installed. Installing.."; install_cryptsetup  >> "$LOGFILE" 2>&1; echo -e "$green cryptsetup installed! $none"; }
+  echo -e "$info [$STAT] Check if the required applications are installed..."
+  type -P dmsetup &>/dev/null || echo -e "$info [$STAT] dmestup is not installed. Installing..." #TODO add install device_mapper
+  type -P cryptsetup &>/dev/null || { echo -e "$info [$STAT] cryptsetup is not installed. Installing.."; install_cryptsetup  >> "$LOGFILE" 2>&1; echo -e "$green cryptsetup installed! $none"; }
 }
 
 #____________________________________
 # Check volume 
 
 function check_vol(){
-  echo -e "\n==================================" >> "$LOGFILE" 2>&1
-  echo -e "Check volume..." >> "$LOGFILE" 2>&1
+  echo -e "$debug [$STAT] Check volume..." >> "$LOGFILE" 2>&1
 
   if [ $(mount | grep -c $mountpoint) == 0 ]; then # grep -c counts recurrence number.
-      echo -e "$red Device not mounted, exiting! $none"
-      echo "Please check logs: $LOGFILE"
-      #---
-      # Logs
-      echo "Error: no device  mounted to $mountpoint:" >> "$LOGFILE" 2>&1
+      echo "$error [$STAT] Device not mounted, exiting! $none"
+      echo "$error [$STAT] Please check logfile: $LOGFILE"
+      echo "$error [$STAT] No device  mounted to $mountpoint:" >> "$LOGFILE" 2>&1
       df -h >> "$LOGFILE" 2>&1
-      # end logs
       unlock # unlocking script instance
       exit 1
   else
     device=$(df -P $mountpoint | tail -1 | cut -d' ' -f 1)
-    echo "Device name: $device" >> "$LOGFILE" 2>&1
+    echo "$debug [$STAT] Device name: $device" >> "$LOGFILE" 2>&1
   fi
 }
 
@@ -210,28 +206,25 @@ function check_vol(){
 # Umount volume
 
 function umount_vol(){
-  echo -e  "\n==================================="
-  echo "Umounting device..."
+  echo "$info [$STAT] Unmounting device..."
   umount $mountpoint
-  echo "$device umounted, ready for encryption!"
+  echo "$info [$STAT] $device umounted, ready for encryption!"
 }
 
 #____________________________________
 function setup_device(){
-  echo "[$STAT] Using $cipher_algorithm algorithm to luksformat the volume."
-  # log
-  echo -e "\n[DEBUG] Start cryptsetup" >> "$LOGFILE" 2>&1
+  echo "$info [$STAT] Using $cipher_algorithm algorithm to luksformat the volume."
+  echo -e "\n$debug [$STAT] Start cryptsetup" >> "$LOGFILE" 2>&1
   info >> "$LOGFILE" 2>&1
-  echo -e "[DEBUG] cryptsetup full command:" >> "$LOGFILE" 2>&1 
-  echo -e "[DEBUG] cryptsetup -v --cipher $cipher_algorithm --key-size $keysize --hash $hash_algorithm --iter-time 2000 --use-urandom --verify-passphrase luksFormat $device" >> "$LOGFILE" 2>&1 
-  # end log
+  echo -e "$debug [$STAT] cryptsetup full command:" >> "$LOGFILE" 2>&1 
+  echo -e "$debug [$STAT] cryptsetup -v --cipher $cipher_algorithm --key-size $keysize --hash $hash_algorithm --iter-time 2000 --use-urandom --verify-passphrase luksFormat $device --batch-mode" >> "$LOGFILE" 2>&1 
   cryptsetup -v --cipher $cipher_algorithm --key-size $keysize --hash $hash_algorithm --iter-time 2000 --use-urandom --verify-passphrase luksFormat $device --batch-mode
   ecode=$?
   if [ $ecode != 0 ]; then
-    # log
-    echo -e "[Error] Command cryptsetup failed! Mounting $device to $mountpoint again." >> "$LOGFILE" 2>&1 #TODO redirect exit code
+    ### start log
+    echo -e "$error [$STAT] Command cryptsetup failed! Mounting $device to $mountpoint again." >> "$LOGFILE" 2>&1 #TODO redirect exit code
+    ### end log
     mount $device $mountpoint >> "$LOGFILE" 2>&1
-    # end log
     unlock
     exit 1
   fi
@@ -239,17 +232,15 @@ function setup_device(){
 
 #____________________________________
 function open_device(){
-  echo -e "[$STAT] Open LUKS volume."
+  echo -e "$info [$STAT] Open LUKS volume."
   if [ ! -b /dev/mapper/${cryptdev} ]; then
     cryptsetup luksOpen $device $cryptdev
   else
-    echo -e "[Error] Crypt device already exists! Please check logs: $LOGFILE"
-    # log
-    echo -e "[Error] Unable to luksOpen device. " >> "$LOGFILE" 2>&1
-    echo -e "[Error] /dev/mapper/${cryptdev} already exists." >> "$LOGFILE" 2>&1
-    echo -e "[Error]  Mounting $device to $mountpoint again." >> "$LOGFILE" 2>&1
+    echo -e "$error [$STAT] Crypt device already exists! Please check logs: $LOGFILE"
+    echo -e "$error [$STAT] Unable to luksOpen device. " >> "$LOGFILE" 2>&1
+    echo -e "$error [$STAT] /dev/mapper/${cryptdev} already exists." >> "$LOGFILE" 2>&1
+    echo -e "$error [$STAT]  Mounting $device to $mountpoint again." >> "$LOGFILE" 2>&1
     mount $device $mountpoint >> "$LOGFILE" 2>&1
-    # end log
     unlock # unlocking script instance
     exit 1
   fi
@@ -257,8 +248,7 @@ function open_device(){
 
 #____________________________________
 function encryption_status(){
-  echo "==================================="
-  echo "check $cryptdev status with cryptseutp status"
+  echo "$info [$STAT] check $cryptdev status with cryptsetup status"
   cryptsetup -v status $cryptdev
 }
 
@@ -272,24 +262,22 @@ function encryption_status(){
 # To prevent cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt.
 
 function wipe_data(){
-  echo "[$STAT] Wiping disk data by overwriting the entire drive with random data"
-  echo "[$STAT] This might take time depending on the size & your machine!"
+  echo "$info [$STAT] Wiping disk data by overwriting the entire drive with random data"
+  echo "$info [$STAT] This might take time depending on the size & your machine!"
 
   #dd if=/dev/zero of=/dev/mapper/${cryptdev} bs=1M  status=progress >> "$LOGFILE" 2>&1
   pv -tpreb /dev/zero | dd of=/dev/mapper/${cryptdev} bs=1M status=progress >> "$LOGFILE" 2>&1
-  echo -e "\nBlock file /dev/mapper/${cryptdev} created." >> "${LOGFILE}" 2>&1
-  echo -e "[$STAT] Wiping done."
+  echo -e "\n$debug [$STAT] Block file /dev/mapper/${cryptdev} created." >> "${LOGFILE}" 2>&1
+  echo -e "$debug [$STAT] Wiping done."
 }
 
 #____________________________________
 function create_fs(){
-  echo -e "\n==================================="
-  echo -e "Creating filesystem..."
+  echo -e "$info [$STAT] Creating filesystem..."
   mkfs.${filesystem} /dev/mapper/${cryptdev} #Do not redirect mkfs, otherwise no interactive mode!
   if [ $? != 0 ]; then
-    echo -e "[Error] While creating ${filesystem} filesystem. Please check logs: $LOGFILE"
-    # update log
-    echo -e "[Error] Command mkfs failed!" >> "$LOGFILE" 2>&1
+    echo -e "$error [$STAT] While creating ${filesystem} filesystem. Please check logs: $LOGFILE"
+    echo -e "$error [$STAT] Command mkfs failed!" >> "$LOGFILE" 2>&1
     unlock
     exit 1
   fi
@@ -297,8 +285,7 @@ function create_fs(){
 
 #____________________________________
 function mount_vol(){
-  echo -e "\n==================================="
-  echo -e "Mounting encrypted device..."
+  echo -e "$info [$STAT] Mounting encrypted device..."
   mount /dev/mapper/${cryptdev} $mountpoint
   df -Hv >> "$LOGFILE" 2>&1
 }
@@ -337,8 +324,8 @@ function create_cryptdev_ini_file(){
 #____________________________________
 function end_encrypt_procedure(){
   # send signal to unclok waiting condition for automation software (e.g Ansible)
-  echo -e "[$STAT] LUKS encryption completed." > $SUCCESS_FILE
-  echo -e "[$STAT] SUCCESSFUL. You will be automatically kicked out by this server. Galaxy will be automatically installed!"
+  echo -e "$debug [$STAT] LUKS encryption completed." > $SUCCESS_FILE
+  echo -e "$debug [$STAT] SUCCESSFUL. You will be automatically kicked out by this server. Galaxy will be automatically installed!"
 }
 
 #____________________________________
@@ -432,19 +419,19 @@ do
     *) echo >&2 "Loading defaults"; DEFAULT=YES;; # terminate while loop
   esac
   shift
-  echo "Custom options:" >> "$LOGFILE" 2>&1
+  echo "$debug [$STAT] Custom options:" >> "$LOGFILE" 2>&1
   info >> "$LOGFILE" 2>&1
 done
 
 if [[ -n $1 ]]; then
-    echo "Last line of file specified as non-opt/last argument:"
+    echo "$info [$STAT] Last line of file specified as non-opt/last argument:"
     tail -1 $1
 fi
 
 # Print Help
 if [ "${HELP}" = "YES" ]
   then
-    echo -e "$green Print help... $normal"
+    echo -e "Print help."
 fi
 
 # Check if the required applications are installed
