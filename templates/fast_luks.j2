@@ -324,8 +324,8 @@ function create_cryptdev_ini_file(){
 #____________________________________
 function end_encrypt_procedure(){
   # send signal to unclok waiting condition for automation software (e.g Ansible)
-  echo -e "$debug [$STAT] LUKS encryption completed." > $SUCCESS_FILE
-  echo -e "$debug [$STAT] SUCCESSFUL. You will be automatically kicked out by this server. Galaxy will be automatically installed!"
+  echo -e "LUKS encryption completed." > $SUCCESS_FILE # WARNING DO NOT MODFIFY THIS LINE, THIS IS A CONTROL STRING FOR ANSIBLE
+  echo -e "$info [$STAT] SUCCESSFUL. You will be automatically kicked out by this server. Galaxy will be automatically installed."
 }
 
 #____________________________________
