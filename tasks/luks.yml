@@ -1,4 +1,5 @@
 ---
+n the
 # Recipe to encrypt external volume
 
 #______________________________________
@@ -71,7 +72,7 @@
 
 - name: 'Wait for {{ luks_success_file }} file'
   wait_for:
-    path: {{ luks_success_file }} # FIXED in fast-luks script
+    path: '{{ luks_success_file }}' # FIXED in fast-luks script
     timeout: '{{ wait_timeout }}'
     search_regex: "LUKS encryption completed."
 
