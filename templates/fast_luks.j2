@@ -29,7 +29,6 @@ debug="DEBUG "$time
 warn="WARNING  "$time
 error="ERROR "$time
 
-
 ################################################################################
 # FUNCTIONS
 
@@ -168,6 +167,7 @@ function install_cryptsetup(){
 # Check cryptsetup installation
 
 function check_cryptsetup(){
+  echo ""
   echo "$info [$STAT] Check if the required applications are installed..."
   type -P dmsetup &>/dev/null || echo "$info [$STAT] dmestup is not installed. Installing..." #TODO add install device_mapper
   type -P cryptsetup &>/dev/null || { echo "$info [$STAT] cryptsetup is not installed. Installing.."; install_cryptsetup  >> "$LOGFILE" 2>&1; echo "$info [$STAT] cryptsetup installed!"; }
