@@ -85,7 +85,7 @@ function lock(){
     if mkdir "${LOCKDIR}" &>/dev/null; then
       # lock succeeded, I'm storing the PID 
       echo "$$" >"${PIDFILE}"
-      echo -e "$info [$STAT] Starting log file: $now"
+      echo -e "$info [$STAT] Starting log file."
 
     else
 
