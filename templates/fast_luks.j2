@@ -22,17 +22,7 @@ logs=$(cat < /dev/urandom | tr -dc "[:lower:]"  | head -c 4)
 temp_name="$constant$logs"
 now=$(date +"-%b-%d-%y-%H%M%S")
 
-# colors for errors and warnings	
-red=$(tput setab 0; tput setaf 1)
-yellow=$(tput setab 0; tput setaf 3)
-none=$(tput sgr0)
-
-# colors for messages
-green="\033[32m"
-blue="\033[34m"
-normal="\033[0m"
-
-# logs
+# log levels
 time=$(date +"%Y-%m-%d %H:%M:%S")
 info="INFO  "$time
 debug="DEBUG "$time
@@ -54,23 +44,23 @@ until [[ $NEW_PWD =~ ^([a-zA-Z+]+[0-9+]+)$ ]]; do
 done
 
 function intro(){
-  echo -e "========================================================="
-  echo -e "                      ELIXIR-Italy"
-  echo -e "               Filesystem encryption script"             
-  echo -e ""
-  echo -e "A password with at least 8 alphanumeric string is needed"
-  echo -e "There's no way to recover your password."
-  echo -e "Example (automatic random generated passphrase):"
-  echo -e "                      ${NEW_PWD}"
-  echo -e ""
-  echo -e "You will be required to insert your password 3 times:"
-  echo -e "  1. Enter passphrase"
-  echo -e "  2. Verify passphrase"
-  echo -e "  3. Unlock your volume"
-  echo -e ""
-  echo -e "The connection will be  automatically closed."
-  echo -e ""
-  echo -e "========================================================="
+  echo "========================================================="
+  echo "                      ELIXIR-Italy"
+  echo "               Filesystem encryption script"             
+  echo ""
+  echo "A password with at least 8 alphanumeric string is needed"
+  echo "There's no way to recover your password."
+  echo "Example (automatic random generated passphrase):"
+  echo "                      ${NEW_PWD}"
+  echo ""
+  echo "You will be required to insert your password 3 times:"
+  echo "  1. Enter passphrase"
+  echo "  2. Verify passphrase"
+  echo "  3. Unlock your volume"
+  echo ""
+  echo "The connection will be  automatically closed."
+  echo ""
+  echo "========================================================="
 }
 
 #____________________________________
@@ -78,7 +68,7 @@ function intro(){
 # http://wiki.bash-hackers.org/howto/mutex
 # "trap -l" for signal summary
 
-LOCKDIR=/var/run/fast_luks
+LOCKDIR={{ luks_lock_dir }}
 PIDFILE=${LOCKDIR}/fast-luks.pid
 
 # exit codes and text for them - additional features nobody needs :-)
@@ -163,14 +153,14 @@ function install_cryptsetup(){
       . /etc/os-release
       echo $ID
       if [ "$ID" = "ubuntu" ]; then
-          echo "$info [$STAT] Distribution: Ubuntu. Using apt"
+          echo "$info [$STAT] Distribution: Ubuntu. Using apt."
           apt-get install -y cryptsetup
       else
-          echo "$info [$STAT] Distribution: CentOS. Using yum"
+          echo "$info [$STAT] Distribution: CentOS. Using yum."
           yum install -y cryptsetup-luks pv
       fi
   else
-      echo "$info [$STAT] Not running a distribution with /etc/os-release available"
+      echo "$info [$STAT] Not running a distribution with /etc/os-release available."
   fi
 }
 
@@ -178,19 +168,19 @@ function install_cryptsetup(){
 # Check cryptsetup installation
 
 function check_cryptsetup(){
-  echo -e "$info [$STAT] Check if the required applications are installed..."
-  type -P dmsetup &>/dev/null || echo -e "$info [$STAT] dmestup is not installed. Installing..." #TODO add install device_mapper
-  type -P cryptsetup &>/dev/null || { echo -e "$info [$STAT] cryptsetup is not installed. Installing.."; install_cryptsetup  >> "$LOGFILE" 2>&1; echo -e "$green cryptsetup installed! $none"; }
+  echo "$info [$STAT] Check if the required applications are installed..."
+  type -P dmsetup &>/dev/null || echo "$info [$STAT] dmestup is not installed. Installing..." #TODO add install device_mapper
+  type -P cryptsetup &>/dev/null || { echo "$info [$STAT] cryptsetup is not installed. Installing.."; install_cryptsetup  >> "$LOGFILE" 2>&1; echo "$info [$STAT] cryptsetup installed!"; }
 }
 
 #____________________________________
 # Check volume 
 
 function check_vol(){
-  echo -e "$debug [$STAT] Check volume..." >> "$LOGFILE" 2>&1
+  echo "$debug [$STAT] Check volume..." >> "$LOGFILE" 2>&1
 
   if [ $(mount | grep -c $mountpoint) == 0 ]; then # grep -c counts recurrence number.
-      echo "$error [$STAT] Device not mounted, exiting! $none"
+      echo "$error [$STAT] Device not mounted, exiting!"
       echo "$error [$STAT] Please check logfile: $LOGFILE"
       echo "$error [$STAT] No device  mounted to $mountpoint:" >> "$LOGFILE" 2>&1
       df -h >> "$LOGFILE" 2>&1
@@ -206,6 +196,7 @@ function check_vol(){
 # Umount volume
 
 function umount_vol(){
+  echo ""
   echo "$info [$STAT] Unmounting device..."
   umount $mountpoint
   echo "$info [$STAT] $device umounted, ready for encryption!"
@@ -213,16 +204,17 @@ function umount_vol(){
 
 #____________________________________
 function setup_device(){
+  echo ""
   echo "$info [$STAT] Using $cipher_algorithm algorithm to luksformat the volume."
-  echo -e "\n$debug [$STAT] Start cryptsetup" >> "$LOGFILE" 2>&1
+  echo "\n$debug [$STAT] Start cryptsetup" >> "$LOGFILE" 2>&1
   info >> "$LOGFILE" 2>&1
-  echo -e "$debug [$STAT] cryptsetup full command:" >> "$LOGFILE" 2>&1 
-  echo -e "$debug [$STAT] cryptsetup -v --cipher $cipher_algorithm --key-size $keysize --hash $hash_algorithm --iter-time 2000 --use-urandom --verify-passphrase luksFormat $device --batch-mode" >> "$LOGFILE" 2>&1 
+  echo "$debug [$STAT] cryptsetup full command:" >> "$LOGFILE" 2>&1 
+  echo "$debug [$STAT] cryptsetup -v --cipher $cipher_algorithm --key-size $keysize --hash $hash_algorithm --iter-time 2000 --use-urandom --verify-passphrase luksFormat $device --batch-mode" >> "$LOGFILE" 2>&1 
   cryptsetup -v --cipher $cipher_algorithm --key-size $keysize --hash $hash_algorithm --iter-time 2000 --use-urandom --verify-passphrase luksFormat $device --batch-mode
   ecode=$?
   if [ $ecode != 0 ]; then
     ### start log
-    echo -e "$error [$STAT] Command cryptsetup failed! Mounting $device to $mountpoint again." >> "$LOGFILE" 2>&1 #TODO redirect exit code
+    echo "$error [$STAT] Command cryptsetup failed! Mounting $device to $mountpoint again." >> "$LOGFILE" 2>&1 #TODO redirect exit code
     ### end log
     mount $device $mountpoint >> "$LOGFILE" 2>&1
     unlock
@@ -232,14 +224,15 @@ function setup_device(){
 
 #____________________________________
 function open_device(){
-  echo -e "$info [$STAT] Open LUKS volume."
+  echo ""
+  echo "$info [$STAT] Open LUKS volume."
   if [ ! -b /dev/mapper/${cryptdev} ]; then
     cryptsetup luksOpen $device $cryptdev
   else
-    echo -e "$error [$STAT] Crypt device already exists! Please check logs: $LOGFILE"
-    echo -e "$error [$STAT] Unable to luksOpen device. " >> "$LOGFILE" 2>&1
-    echo -e "$error [$STAT] /dev/mapper/${cryptdev} already exists." >> "$LOGFILE" 2>&1
-    echo -e "$error [$STAT]  Mounting $device to $mountpoint again." >> "$LOGFILE" 2>&1
+    echo "$error [$STAT] Crypt device already exists! Please check logs: $LOGFILE"
+    echo "$error [$STAT] Unable to luksOpen device. " >> "$LOGFILE" 2>&1
+    echo "$error [$STAT] /dev/mapper/${cryptdev} already exists." >> "$LOGFILE" 2>&1
+    echo "$error [$STAT]  Mounting $device to $mountpoint again." >> "$LOGFILE" 2>&1
     mount $device $mountpoint >> "$LOGFILE" 2>&1
     unlock # unlocking script instance
     exit 1
@@ -248,6 +241,7 @@ function open_device(){
 
 #____________________________________
 function encryption_status(){
+  echo ""
   echo "$info [$STAT] check $cryptdev status with cryptsetup status"
   cryptsetup -v status $cryptdev
 }
@@ -262,22 +256,24 @@ function encryption_status(){
 # To prevent cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt.
 
 function wipe_data(){
+  echo ""
   echo "$info [$STAT] Wiping disk data by overwriting the entire drive with random data"
   echo "$info [$STAT] This might take time depending on the size & your machine!"
 
   #dd if=/dev/zero of=/dev/mapper/${cryptdev} bs=1M  status=progress >> "$LOGFILE" 2>&1
   pv -tpreb /dev/zero | dd of=/dev/mapper/${cryptdev} bs=1M status=progress >> "$LOGFILE" 2>&1
-  echo -e "\n$debug [$STAT] Block file /dev/mapper/${cryptdev} created." >> "${LOGFILE}" 2>&1
-  echo -e "$debug [$STAT] Wiping done."
+  echo "\n$debug [$STAT] Block file /dev/mapper/${cryptdev} created." >> "${LOGFILE}" 2>&1
+  echo "$debug [$STAT] Wiping done."
 }
 
 #____________________________________
 function create_fs(){
-  echo -e "$info [$STAT] Creating filesystem..."
+  echo ""
+  echo "$info [$STAT] Creating filesystem..."
   mkfs.${filesystem} /dev/mapper/${cryptdev} #Do not redirect mkfs, otherwise no interactive mode!
   if [ $? != 0 ]; then
-    echo -e "$error [$STAT] While creating ${filesystem} filesystem. Please check logs: $LOGFILE"
-    echo -e "$error [$STAT] Command mkfs failed!" >> "$LOGFILE" 2>&1
+    echo "$error [$STAT] While creating ${filesystem} filesystem. Please check logs: $LOGFILE"
+    echo "$error [$STAT] Command mkfs failed!" >> "$LOGFILE" 2>&1
     unlock
     exit 1
   fi
@@ -285,7 +281,8 @@ function create_fs(){
 
 #____________________________________
 function mount_vol(){
-  echo -e "$info [$STAT] Mounting encrypted device..."
+  echo ""
+  echo "$info [$STAT] Mounting encrypted device..."
   mount /dev/mapper/${cryptdev} $mountpoint
   df -Hv >> "$LOGFILE" 2>&1
 }
@@ -295,15 +292,15 @@ function create_cryptdev_ini_file(){
   # Create cryptdev ini file
   luks_cryptdev_file='{{ encrypt_ini_file }}'
 
-  echo -e "# This file has been generated using fast_luks.sh script" > ${luks_cryptdev_file}
-  echo -e "# https://github.com/mtangaro/galaxycloud-testing/blob/master/fast_luks.sh" > ${luks_cryptdev_file}
-  echo -e "# The device name could change after reboot, please use UUID instead." >> ${luks_cryptdev_file}
-  echo -e "# LUKS provides a UUID \(Universally Unique Identifier\) \for each device." > ${luks_cryptdev_file}
-  echo -e "# This, unlike the device name \(eg: /dev/vdb\), is guaranteed to remain constant" > ${luks_cryptdev_file}
-  echo -e "# as long as the LUKS header remains intact." >> ${luks_cryptdev_file}
-  echo -e "#" >> ${luks_cryptdev_file}
-  echo -e "# LUKS header information for $device" >> ${luks_cryptdev_file}
-  echo -e "# luks-${now}\n" >> ${luks_cryptdev_file}
+  echo "# This file has been generated using fast_luks.sh script" > ${luks_cryptdev_file}
+  echo "# https://github.com/mtangaro/galaxycloud-testing/blob/master/fast_luks.sh" > ${luks_cryptdev_file}
+  echo "# The device name could change after reboot, please use UUID instead." >> ${luks_cryptdev_file}
+  echo "# LUKS provides a UUID \(Universally Unique Identifier\) \for each device." > ${luks_cryptdev_file}
+  echo "# This, unlike the device name \(eg: /dev/vdb\), is guaranteed to remain constant" > ${luks_cryptdev_file}
+  echo "# as long as the LUKS header remains intact." >> ${luks_cryptdev_file}
+  echo "#" >> ${luks_cryptdev_file}
+  echo "# LUKS header information for $device" >> ${luks_cryptdev_file}
+  echo "# luks-${now}\n" >> ${luks_cryptdev_file}
   
   echo "[luks]" >> ${luks_cryptdev_file}
   echo "cipher_algorithm = ${cipher_algorithm}" >> ${luks_cryptdev_file}
@@ -323,9 +320,10 @@ function create_cryptdev_ini_file(){
 
 #____________________________________
 function end_encrypt_procedure(){
+  echo ""
   # send signal to unclok waiting condition for automation software (e.g Ansible)
-  echo -e "LUKS encryption completed." > $SUCCESS_FILE # WARNING DO NOT MODFIFY THIS LINE, THIS IS A CONTROL STRING FOR ANSIBLE
-  echo -e "$info [$STAT] SUCCESSFUL. You will be automatically kicked out by this server. Galaxy will be automatically installed."
+  echo "LUKS encryption completed." > $SUCCESS_FILE # WARNING DO NOT MODFIFY THIS LINE, THIS IS A CONTROL STRING FOR ANSIBLE
+  echo "$info [$STAT] SUCCESSFUL. You will be automatically kicked out by this server. Galaxy will be automatically installed."
 }
 
 #____________________________________
@@ -365,8 +363,8 @@ function encrypt(){
 # Main script
 
 STAT="fast-luks"
-LOGFILE="/tmp/luks$now.log"
-SUCCESS_FILE="/tmp/fast-luks.success"
+LOGFILE="{{ luks_log_path }}/luks$now.log"
+SUCCESS_FILE="{{ luks_success_file }}"
 
 # Default values
 cipher_algorithm='aes-xts-plain64'

@@ -64,9 +64,11 @@ userdata_space: 'galaxy'
 #________________________________
 # 3. encryption
 
+luks_lock_dir: '/var/run/fast_luks'
+luks_success_file: '/var/run/fast-luks.success'
+luks_log_path: '{{ galaxy_log_path }}'
 encrypt_ini_file: '{{ config_files_path }}/luks-cryptdev.ini'
 wait_timeout: 18000 # wait for 5 hous FIXME
-
 mail_from: "GalaxyCloud@elixir-italy.org"
 mail_subject: "[ELIXIR-ITALY] GalaxyCloud encrypt password"
 
