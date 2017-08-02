@@ -1,0 +1,141 @@
+#!/usr/bin/env python
+
+'''
+ELIXIR-ITALY
+INDIGO-DataCloud
+IBIOM-CNR
+
+Contributors:
+author: Tangaro Marco
+email: ma.tangaro@ibiom.cnr.it
+'''
+
+import sys, os
+import argparse
+import subprocess
+
+try:
+  import ConfigParser
+except ImportError:
+  import configparse
+
+# Custom libraries
+from galaxyctl_libs import UwsgiStatsServer
+from galaxyctl_libs import bcolors
+
+luks_config_file = '{{ luks_config_file }}'
+
+import logging
+logging.basicConfig(filename='/var/log/galaxy/galaxyctl.log', format='%(levelname)s %(asctime)s %(message)s', level=logging.DEBUG)
+
+#______________________________________
+def cli_options():
+  parser = argparse.ArgumentParser(description='Onedata connection script')
+  parser.add_argument('action', choices=['open','close','status'], help='Action')
+  return parser.parse_args()
+
+#_____________________________________
+def read_cryptdev_ini_file(fname, section, option):
+  configParser = ConfigParser.RawConfigParser()
+  configParser.readfp(open(fname))
+  configParser.read(fname)
+
+  par = 0
+  if configParser.has_option(section, option):
+    par = configParser.get(section , option)
+  else:
+    logging.debug('[luksctl] No [%s] section in %s' % ('luks', fname))
+    return False
+
+  return par
+
+#____________________________________
+def exec_command(command):
+  proc = subprocess.Popen( args=command, shell=True,  stdout=subprocess.PIPE, stderr=subprocess.PIPE )
+  communicateRes = proc.communicate()
+  stdOutValue, stdErrValue = communicateRes
+  status = proc.wait()
+  return stdOutValue, stdErrValue, status
+
+#____________________________________
+# dmsetup info
+def dmsetup_info(cryptdev):
+  command = 'dmsetup info /dev/mapper/%s' % cryptdev
+  stdOutValue, stdErrValue, status = exec_command(command)
+  return status
+
+#____________________________________
+# Display dmsetup info
+def display_dmsetup_info(cryptdev):
+  command = 'dmsetup info /dev/mapper/%s' % cryptdev
+  stdOutValue, stdErrValue, status = exec_command(command)
+
+  if str(status) == '0':
+    print stdOutValue
+    print 'Encrypted volume: ' + bcolors.status_ok
+  else:
+    logging.error('[luksctl] %s' % stdErrValue)
+    print 'Encrypted volume: ' + bcolors.status_fail
+
+#______________________________________
+# luksOpen device
+def luksopen_device(uuid, cryptdev, mountpoint):
+  cmd_open = 'cryptsetup luksOpen /dev/disk/by-uuid/%s %s' % (uuid, cryptdev)
+  exec_command(cmd_open)
+
+  cmd_mount = 'mount /dev/mapper/%s %s' % (cryptdev, mountpoint)
+  stdout, stderr, status = exec_command(cmd_mount)
+
+  if str(status) == '0':
+    cmd_ownership = 'chown galaxy:galaxy %s' % mountpoint
+    os.system(cmd_ownership)
+    display_dmsetup_info(cryptdev)
+  else:
+    print 'Encrypted volume mount: ' + bcolors.status_fail
+
+#______________________________________
+# luksClose device
+def luksclose_device(mountpoint, cryptdev):
+  cmd_umount = 'umount %s' % mountpoint
+  exec_command(cmd_umount)
+
+  cmd_close = 'cryptsetup close %s' % cryptdev
+  exec_command(cmd_close)
+
+  # if dmsetup_setup fails (status 1) the volume has been correctly closed
+  if str(dmsetup_info(cryptdev)) == '0':
+    print 'Encrypted volume umount: ' + bcolors.status_fail
+  else:
+    print 'Encrypted volume umount: ' + bcolors.status_ok
+
+#______________________________________
+def luksctl():
+
+  if not os.geteuid() == 0:
+    sys.exit('Script must be run as root')
+
+  # Read luks ini file variables
+  cipher_algorithm = read_cryptdev_ini_file(luks_config_file, 'luks', 'cipher_algorithm')
+  hash_algorithm = read_cryptdev_ini_file(luks_config_file, 'luks', 'hash_algorithm')
+  keysize = read_cryptdev_ini_file(luks_config_file, 'luks', 'keysize')
+  device = read_cryptdev_ini_file(luks_config_file, 'luks', 'device')
+  uuid = read_cryptdev_ini_file(luks_config_file, 'luks', 'uuid')
+  cryptdev = read_cryptdev_ini_file(luks_config_file, 'luks', 'cryptdev')
+  mapper = read_cryptdev_ini_file(luks_config_file, 'luks', 'mapper')
+  mountpoint = read_cryptdev_ini_file(luks_config_file, 'luks', 'mountpoint')
+  filesystem = read_cryptdev_ini_file(luks_config_file, 'luks', 'filesystem')
+
+  options = cli_options()
+
+  if options.action == "status":
+    display_dmsetup_info(cryptdev)
+
+  if options.action == "open":
+    luksopen_device(uuid, cryptdev, mountpoint)
+
+  if options.action == "close":
+    luksclose_device(mountpoint, cryptdev)
+
+#______________________________________
+if __name__ == '__main__':
+  luksctl()

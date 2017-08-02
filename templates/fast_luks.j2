@@ -293,14 +293,14 @@ function create_cryptdev_ini_file(){
   luks_cryptdev_file='{{ encrypt_ini_file }}'
 
   echo "# This file has been generated using fast_luks.sh script" > ${luks_cryptdev_file}
-  echo "# https://github.com/mtangaro/galaxycloud-testing/blob/master/fast_luks.sh" > ${luks_cryptdev_file}
+  echo "# https://github.com/mtangaro/galaxycloud-testing/blob/master/fast_luks.sh" >> ${luks_cryptdev_file}
   echo "# The device name could change after reboot, please use UUID instead." >> ${luks_cryptdev_file}
-  echo "# LUKS provides a UUID \(Universally Unique Identifier\) \for each device." > ${luks_cryptdev_file}
-  echo "# This, unlike the device name \(eg: /dev/vdb\), is guaranteed to remain constant" > ${luks_cryptdev_file}
+  echo "# LUKS provides a UUID \(Universally Unique Identifier\) \for each device." >> ${luks_cryptdev_file}
+  echo "# This, unlike the device name \(eg: /dev/vdb\), is guaranteed to remain constant" >> ${luks_cryptdev_file}
   echo "# as long as the LUKS header remains intact." >> ${luks_cryptdev_file}
   echo "#" >> ${luks_cryptdev_file}
   echo "# LUKS header information for $device" >> ${luks_cryptdev_file}
-  echo "# luks-${now}\n" >> ${luks_cryptdev_file}
+  echo -e "# luks-${now}\n" >> ${luks_cryptdev_file}
   
   echo "[luks]" >> ${luks_cryptdev_file}
   echo "cipher_algorithm = ${cipher_algorithm}" >> ${luks_cryptdev_file}

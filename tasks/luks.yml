@@ -37,9 +37,10 @@
     dest: '{{ item.destination }}'
     mode: a+x
   with_items:
-    - { script: 'fast_luks.j2', destination: '/usr/local/bin/fast-luks' }
-    - { script: 'luksctl.j2', destination: '/usr/local/bin/luksctl' }
-    - { script: 'kickout.j2', destination: '/usr/local/bin/kickout' }
+    - { script: 'fast_luks.j2', destination: '/usr/local/bin/fast-luks', mode: 'a+x' }
+    - { script: 'galaxyctl_libs.py.j2', destination: '/usr/local/bin/galaxyctl_libs.py', mode: 'a+x' }
+    - { script: 'luksctl.py.j2', destination: '/usr/local/bin/luksctl', mode: 'a+x' }
+    - { script: 'kickout.j2', destination: '/usr/local/bin/kickout', mode: 'a+x' }
   become_user: root
   become_method: sudo
 
