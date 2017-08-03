@@ -13,6 +13,26 @@
 # The script is able to detect the $device only if it is mounted.
 # This is by default for our use-case.
 
+STAT="fast-luks"
+LOGFILE="{{ luks_log_path }}/luks$now.log"
+SUCCESS_FILE="{{ luks_success_file }}"
+
+# Defaults
+cipher_algorithm='aes-xts-plain64'
+keysize='256'
+hash_algorithm='sha256'
+device='/dev/vdb'
+cryptdev='crypt'
+mountpoint='/export'
+filesystem='ext4'
+
+# luks ini file
+luks_cryptdev_file='{{ luks_config_file }}'
+
+# lockfile configuration
+LOCKDIR={{ luks_lock_dir }}
+PIDFILE=${LOCKDIR}/fast-luks.pid
+
 ################################################################################
 # VARIABLES
 
@@ -66,9 +86,6 @@ function intro(){
 # Lock/UnLock Section
 # http://wiki.bash-hackers.org/howto/mutex
 # "trap -l" for signal summary
-
-LOCKDIR={{ luks_lock_dir }}
-PIDFILE=${LOCKDIR}/fast-luks.pid
 
 # exit codes and text for them - additional features nobody needs :-)
 ENO_SUCCESS=0; ETXT[0]="ENO_SUCCESS"
@@ -289,9 +306,6 @@ function mount_vol(){
 
 #____________________________________
 function create_cryptdev_ini_file(){
-  # Create cryptdev ini file
-  luks_cryptdev_file='{{ encrypt_ini_file }}'
-
   echo "# This file has been generated using fast_luks.sh script" > ${luks_cryptdev_file}
   echo "# https://github.com/mtangaro/galaxycloud-testing/blob/master/fast_luks.sh" >> ${luks_cryptdev_file}
   echo "# The device name could change after reboot, please use UUID instead." >> ${luks_cryptdev_file}
@@ -361,19 +375,6 @@ function encrypt(){
 
 ################################################################################
 # Main script
-
-STAT="fast-luks"
-LOGFILE="{{ luks_log_path }}/luks$now.log"
-SUCCESS_FILE="{{ luks_success_file }}"
-
-# Default values
-cipher_algorithm='aes-xts-plain64'
-keysize='256'
-hash_algorithm='sha256'
-device='/dev/vdb'
-cryptdev='crypt'
-mountpoint='/export'
-filesystem='ext4'
 
 # Create lock file. Ensure only single instance running.
 lock >> "$LOGFILE" 2>&1

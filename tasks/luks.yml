@@ -78,7 +78,7 @@
 
 - name: Check /etc/luks-cryptdev.conf. If not present something went wrong
   wait_for:
-    path: '{{ encrypt_ini_file }}'
+    path: '{{ luks_config_file }}'
     state: present
 
 - name: Check if device mapper /dev/mapper/{{ cryptdev }} target exists
