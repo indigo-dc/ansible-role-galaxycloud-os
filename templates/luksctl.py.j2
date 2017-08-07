@@ -1,15 +1,13 @@
 #!/usr/bin/env python
+# ELIXIR-ITALY
+# INDIGO-DataCloud
+# IBIOM-CNR
+#
+# Contributors:
+# author: Tangaro Marco
+# email: ma.tangaro@ibiom.cnr.it
 
-'''
-ELIXIR-ITALY
-INDIGO-DataCloud
-IBIOM-CNR
-
-Contributors:
-author: Tangaro Marco
-email: ma.tangaro@ibiom.cnr.it
-'''
-
+# Imports
 import sys, os
 import argparse
 import subprocess
@@ -20,34 +18,24 @@ except ImportError:
   import configparse
 
 # Custom libraries
+from galaxyctl_libs import __version__
 from galaxyctl_libs import UwsgiStatsServer
 from galaxyctl_libs import bcolors
+from galaxyctl_libs import LUKSCtl
 
-luks_config_file = '{{ luks_config_file }}'
-
+# Log config
 import logging
 logging.basicConfig(filename='/var/log/galaxy/galaxyctl.log', format='%(levelname)s %(asctime)s %(message)s', level=logging.DEBUG)
+
+# Config files
+luks_config_file = '/etc/galaxy/luks-cryptdev.ini'
 
 #______________________________________
 def cli_options():
   parser = argparse.ArgumentParser(description='Onedata connection script')
-  parser.add_argument('action', choices=['open','close','status'], help='Action')
+  parser.add_argument('action', choices=['open','close','status'], nargs='?', help='Action')
+  parser.add_argument('-V', '--version', action='store_true', dest='version', default=False, help='Print galaxyctl_libs version')
   return parser.parse_args()
-
-#_____________________________________
-def read_cryptdev_ini_file(fname, section, option):
-  configParser = ConfigParser.RawConfigParser()
-  configParser.readfp(open(fname))
-  configParser.read(fname)
-
-  par = 0
-  if configParser.has_option(section, option):
-    par = configParser.get(section , option)
-  else:
-    logging.debug('[luksctl] No [%s] section in %s' % ('luks', fname))
-    return False
-
-  return par
 
 #____________________________________
 def exec_command(command):
@@ -87,7 +75,7 @@ def luksopen_device(uuid, cryptdev, mountpoint):
   stdout, stderr, status = exec_command(cmd_mount)
 
   if str(status) == '0':
-    cmd_ownership = 'chown {{ galaxy_user }}y:{{ galaxy_user }} %s' % mountpoint
+    cmd_ownership = 'chown galaxyy:galaxy %s' % mountpoint
     os.system(cmd_ownership)
     display_dmsetup_info(cryptdev)
   else:
@@ -112,29 +100,25 @@ def luksclose_device(mountpoint, cryptdev):
 def luksctl():
 
   if not os.geteuid() == 0:
-    sys.exit('Script must be run as root')
-
-  # Read luks ini file variables
-  cipher_algorithm = read_cryptdev_ini_file(luks_config_file, 'luks', 'cipher_algorithm')
-  hash_algorithm = read_cryptdev_ini_file(luks_config_file, 'luks', 'hash_algorithm')
-  keysize = read_cryptdev_ini_file(luks_config_file, 'luks', 'keysize')
-  device = read_cryptdev_ini_file(luks_config_file, 'luks', 'device')
-  uuid = read_cryptdev_ini_file(luks_config_file, 'luks', 'uuid')
-  cryptdev = read_cryptdev_ini_file(luks_config_file, 'luks', 'cryptdev')
-  mapper = read_cryptdev_ini_file(luks_config_file, 'luks', 'mapper')
-  mountpoint = read_cryptdev_ini_file(luks_config_file, 'luks', 'mountpoint')
-  filesystem = read_cryptdev_ini_file(luks_config_file, 'luks', 'filesystem')
+    sys.exit('[Error] Script must be run as root.')
 
   options = cli_options()
 
+  if options.version is True:
+    print('Galaxyctl library: ' + __version__)
+    return
+
+  # Read luks ini file variables
+  luks = LUKSCtl(luks_config_file)
+
   if options.action == "status":
-    display_dmsetup_info(cryptdev)
+    display_dmsetup_info(luks.get_cryptdev())
 
   if options.action == "open":
-    luksopen_device(uuid, cryptdev, mountpoint)
+    luksopen_device(luks.get_uuid(), luks.get_cryptdev(), luks.get_mountpoint())
 
   if options.action == "close":
-    luksclose_device(mountpoint, cryptdev)
+    luksclose_device(luks.get_mountpoint(), luks.get_cryptdev())
 
 #______________________________________
 if __name__ == '__main__':
