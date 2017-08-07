@@ -4,7 +4,7 @@
 #______________________________________
 # CentOS 7
 
-- name: Install CentOS7 packages
+- name: '[EL] Install packages'
   yum:
     name: '{{ item }}'
     state: present
@@ -16,9 +16,9 @@
   when: ansible_os_family == "RedHat"
 
 #______________________________________
-# Ubuntu 14.04
+# Ubuntu
 
-- name: Install Ubuntu packages
+- name: '[Ubuntu] Install packages'
   apt:
     name: '{{ item }}'
     state: present
@@ -27,7 +27,6 @@
   become_user: root
   become_method: sudo
   when: ansible_os_family == "Debian"
-
 
 #______________________________________
 # LUKSformat volume
@@ -38,9 +37,10 @@
     dest: '{{ item.destination }}'
     mode: a+x
   with_items:
-    - { script: 'fast_luks.j2', destination: '/usr/local/bin/fast-luks' }
-    - { script: 'luksctl.j2', destination: '/usr/local/bin/luksctl' }
-    - { script: 'kickout.j2', destination: '/usr/local/bin/kickout' }
+    - { script: 'fast_luks.j2', destination: '/usr/local/bin/fast-luks', mode: 'a+x' }
+    - { script: 'galaxyctl_libs.py.j2', destination: '/usr/local/bin/galaxyctl_libs.py', mode: 'a+x' }
+    - { script: 'luksctl.py.j2', destination: '/usr/local/bin/luksctl', mode: 'a+x' }
+    - { script: 'kickout.j2', destination: '/usr/local/bin/kickout', mode: 'a+x' }
   become_user: root
   become_method: sudo
 
@@ -62,23 +62,23 @@
 - name: Wait for fast-luks start (pidfile creation)
   wait_for:
     path: /var/run/fast_luks/fast-luks.pid
-    timeout: 18000 # wait for 5 hous FIXME
+    timeout: '{{ wait_timeout }}'
 
 - name: Wait for fast-luks finish (pidfile deletion)
   wait_for:
     path: /var/run/fast_luks/fast-luks.pid
     state: absent
-    timeout: 18000 # wait for 5 hours FIXME
+    timeout: '{{ wait_timeout }}'
 
-- name: Wait for fast_luks success file
+- name: 'Wait for {{ luks_success_file }} file'
   wait_for:
-    path: /tmp/fast-luks.success # FIXED in fast-luks script
-    timeout: 18000 # wait for 5 hours FIXME
+    path: '{{ luks_success_file }}' # FIXED in fast-luks script
+    timeout: '{{ wait_timeout }}'
     search_regex: "LUKS encryption completed."
 
 - name: Check /etc/luks-cryptdev.conf. If not present something went wrong
   wait_for:
-    path: /etc/luks-cryptdev.conf
+    path: '{{ luks_config_file }}'
     state: present
 
 - name: Check if device mapper /dev/mapper/{{ cryptdev }} target exists

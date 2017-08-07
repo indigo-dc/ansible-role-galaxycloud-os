@@ -25,6 +25,9 @@ tool_deps_path: '{{ export_dir }}/tool_deps'
 # Galaxy instance url
 galaxy_instance_url: "http://{{ ansible_default_ipv4.address }}/galaxy/"
 
+# Configuration file directory
+config_files_path: '/etc/galaxy'
+
 # Galaxy instance ssh public key
 galaxy_instance_key_pub: ""
 
@@ -52,15 +55,24 @@ os_storage: "IaaS"
 #________________________________
 # 2. onedata
 
-onedata_dir: '/data'
-onedatactl_config_path: '/etc/galaxy'
-onedatactl_config_file: '{{ onedatactl_config_path }}/onedatactl.ini'
+onedata_dir: '/onedata'
+onedatactl_config_file: '{{ config_files_path }}/onedatactl.ini'
 userdata_oneprovider: 'not_a_provider'
 userdata_token: 'not_a_token'
 userdata_space: 'galaxy'
 
 #________________________________
 # 3. encryption
+
+luks_lock_dir: '/var/run/fast_luks'
+luks_success_file: '/var/run/fast-luks.success'
+luks_log_path: '{{ galaxy_log_path }}'
+luks_config_file: '{{ config_files_path }}/luks-cryptdev.ini'
+wait_timeout: 18000 # wait for 5 hous FIXME
+
+# mail details
+mail_from: "GalaxyCloud@elixir-italy.org"
+mail_subject: "[ELIXIR-ITALY] GalaxyCloud encrypt password"
 
 cipher_algorithm: 'aes-xts-plain64'
 keysize: '256'
