@@ -67,6 +67,6 @@
     group: '{{ galaxy_user }}'
   with_items:
     - '{{ galaxy_log_path }}'
-    - '/etc/galaxy'
+    - '{{ galaxy_custom_config_path }}'
   become_user: root
   become_method: sudo

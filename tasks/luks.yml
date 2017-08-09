@@ -31,7 +31,7 @@
 #______________________________________
 # LUKSformat volume
 
-- name: Copy indigo-dc.galaxycloud-os scripts
+- name: Copy galaxyctl_libs scripts
   template:
     src: '{{ item.script }}'
     dest: '{{ item.destination }}'
@@ -76,7 +76,7 @@
     timeout: '{{ wait_timeout }}'
     search_regex: "LUKS encryption completed."
 
-- name: Check /etc/luks-cryptdev.conf. If not present something went wrong
+- name: 'Check {{ luks_config_file }}. If not present something went wrong'
   wait_for:
     path: '{{ luks_config_file }}'
     state: present

@@ -25,10 +25,10 @@ from galaxyctl_libs import LUKSCtl
 
 # Log config
 import logging
-logging.basicConfig(filename='/var/log/galaxy/galaxyctl.log', format='%(levelname)s %(asctime)s %(message)s', level=logging.DEBUG)
+logging.basicConfig(filename='{{ galaxy_log_path }}/galaxyctl.log', format='%(levelname)s %(asctime)s %(message)s', level=logging.DEBUG)
 
 # Config files
-luks_config_file = '/etc/galaxy/luks-cryptdev.ini'
+luks_config_file = '{{ luks_config_file }}'
 
 #______________________________________
 def cli_options():
@@ -75,7 +75,7 @@ def luksopen_device(uuid, cryptdev, mountpoint):
   stdout, stderr, status = exec_command(cmd_mount)
 
   if str(status) == '0':
-    cmd_ownership = 'chown galaxyy:galaxy %s' % mountpoint
+    cmd_ownership = 'chown galaxy:galaxy %s' % mountpoint
     os.system(cmd_ownership)
     display_dmsetup_info(cryptdev)
   else:
