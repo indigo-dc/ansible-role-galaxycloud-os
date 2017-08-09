@@ -12,6 +12,7 @@
     - git
     - vim
     - wget
+    - lsof
   become_user: root
   become_method: sudo
   when: ansible_os_family == "RedHat"
@@ -43,6 +44,7 @@
     - git
     - vim
     - wget
+    - lsof
   become_user: root
   become_method: sudo
   when: ansible_os_family == "Debian"
