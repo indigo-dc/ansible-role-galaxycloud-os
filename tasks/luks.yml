@@ -37,10 +37,10 @@
     dest: '{{ item.destination }}'
     mode: a+x
   with_items:
-    - { script: 'fast_luks.j2', destination: '/usr/local/bin/fast-luks', mode: 'a+x' }
-    - { script: 'galaxyctl_libs.py.j2', destination: '/usr/local/bin/galaxyctl_libs.py', mode: 'a+x' }
-    - { script: 'luksctl.py.j2', destination: '/usr/local/bin/luksctl', mode: 'a+x' }
-    - { script: 'kickout.j2', destination: '/usr/local/bin/kickout', mode: 'a+x' }
+    - { script: 'fast_luks.j2', destination: '{{ galaxy_custom_script_path }}/fast-luks', mode: 'a+x' }
+    - { script: 'galaxyctl_libs.py.j2', destination: '{{ galaxy_custom_script_path }}/galaxyctl_libs.py', mode: 'a+x' }
+    - { script: 'luksctl.py.j2', destination: '{{ galaxy_custom_script_path }}/luksctl', mode: 'a+x' }
+    - { script: 'kickout.j2', destination: '{{ galaxy_custom_script_path }}/kickout', mode: 'a+x' }
   become_user: root
   become_method: sudo
 
@@ -50,8 +50,8 @@
     line: '{{ item.command }}'
     state: present
   with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo fast-luks' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source /usr/local/bin/kickout' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ galaxy_custom_script_path }}/fast-luks' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ galaxy_custom_script_path }}/kickout' }
 
 # check if /export is mountpoint before LUKS encryption
 - include: check_mountpoint.yml
@@ -104,6 +104,6 @@
     line: '{{ item.command }}'
     state: absent
   with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo fast-luks' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source /usr/local/bin/kickout' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ galaxy_custom_script_path }}/fast-luks' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ galaxy_custom_script_path }}/kickout' }
 
