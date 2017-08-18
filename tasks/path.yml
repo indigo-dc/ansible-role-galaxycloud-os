@@ -2,14 +2,16 @@
 # Create directories
 
 #______________________________________
-# IaaS and Ecryption (default) path configuration
+# Common path configuration
 #
 # Mountpoint: /export
 # Tool dependency dir: /export/tool_deps
-# Conda dir: /export/tool_deps/_conda
+# Conda dir: /export/_conda
 # Job working dir: /export/job_work_dir
 # Galaxy database dir (galaxy_db_dir): /export/galaxy/database
-
+# Galaxy log: /var/log/galaxy
+# Galxy custom configuration path: /etc/galaxy
+ 
 - name: Create directories
   file:
     path: '{{ item }}'
@@ -19,16 +21,17 @@
   with_items:
     - '{{ export_dir }}'
     - '{{ tool_deps_path }}'
+    - '{{ galaxy_log_path }}'
+    - '{{ galaxy_custom_config_path }}'
   become_user: root
   become_method: sudo
-  when: galaxy_lrms == "local" and (os_storage == 'IaaS' or os_storage == 'encryption')
 
 #______________________________________
 # Onedata path configuration
 #
-# Space mountpoint: /data
-# Userdata dir: /data/<onedata_space_name>
-# Galaxy database dir (galaxy_db_dir): /data/<onedata_space_name>/database
+# Space mountpoint: /onedata
+# Userdata dir: /onedata/<onedata_space_name>
+# Galaxy database dir (galaxy_db_dir): /onedata/<onedata_space_name>/database
 # External volume mountpoint: /export
 # Job working dir: /export/job_work
 # Tool dependency dir: /export/tool_deps
@@ -48,25 +51,8 @@
     owner: '{{ galaxy_user }}'
     group: '{{ galaxy_user }}'
   with_items:
-    - '{{ export_dir }}'
     - '{{ onedata_dir }}'
-    - '{{ tool_deps_path }}' # do not create it here... create after mounting onedata space
     - '{{ nginx_upload_store_path }}'
   become_user: root
   become_method: sudo
-  when: galaxy_lrms == "local" and os_storage == 'onedata'
-
-#______________________________________
-# Common path configuration
-
-- name: Create directories
-  file:
-    path: '{{ item }}'
-    state: directory
-    owner: '{{ galaxy_user }}'
-    group: '{{ galaxy_user }}'
-  with_items:
-    - '{{ galaxy_log_path }}'
-    - '{{ galaxy_custom_config_path }}'
-  become_user: root
-  become_method: sudo
+  when: os_storage == 'onedata'
