@@ -86,12 +86,16 @@
     path: '/dev/mapper/{{ cryptdev }}'
   register: crypt_device_register
 
-- name: Set permissions to {{ export_dir }} directory
+# After LUKS procedure, we need to set export_dir permissions and recreate tool_deps directory, since it has been deleted.
+- name: 'Set {{ export_dir }} permissions and recreate {{ tool_deps_path }} directory'
   file:
-    path: '{{ export_dir }}'
+    path: '{{ item }}'
     state: directory
     owner: '{{ galaxy_user }}'
     group: '{{ galaxy_user }}'
+  with_items:
+    - '{{ export_dir }}'
+    - '{{ tool_deps_path }}'
   become_user: root
   become_method: sudo
 
@@ -106,4 +110,3 @@
   with_items:
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ galaxy_custom_script_path }}/fast-luks' }
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ galaxy_custom_script_path }}/kickout' }
-
