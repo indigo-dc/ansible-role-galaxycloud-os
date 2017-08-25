@@ -6,13 +6,9 @@ Run indigo-dc.galaxycloud-os before indigo-dc.galaxycloud, setting the variable 
 
 It is possible to select three different storage options using the ``os_storage`` ansible role variable.
 
-====================  =========================
-Storage provider      Description   
-====================  =========================
-Iaas                  IaaS block storage volume is attached to the instance and Galaxy is configured.
-onedata               Onedata space is mounte through oneclient and Galaxy is configured.
-encryption            IaaS block storage volume is encrypted with aes-xts-plain64 algorithm using LUKS.
-====================  =========================
+- ``Iaas``: IaaS block storage volume is attached to the instance and Galaxy is configured.
+- ``onedata``: Onedata space is mounte through oneclient and Galaxy is configured.
+- ``encryption``: IaaS block storage volume is encrypted with aes-xts-plain64 algorithm using LUKS.
 
 Path configuration for Galaxy is then correctly set, depending on the storage solution selected, replacing the indigo-dc.galaxycloud path recipe (with the ``enable_storage_advanced_options`` set to ``true``).
 
