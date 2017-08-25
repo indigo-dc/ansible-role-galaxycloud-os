@@ -14,11 +14,23 @@ Path configuration for Galaxy is then correctly set, depending on the storage so
 
 The role exploits the ``galaxyctl_libs`` (see :doc:`script_galaxyctl_libs`) for LUKS and onedata volumes management .
 
+LUKS encryption
+---------------
+For a detailed description of LUKS encryption used and scripts, see http://galaxycloud.readthedocs.io/en/latest/FS_encryption.html.
 
 Dependencies
 ------------
 
-The indigo-dc.oneclient role is installed if 'os_storage' is set to 'onedata'
+For LUKS encryption the ansible role install ``cryptsetup``.
+
+For onedata reference data provider, the role depends on indigo-dc.oneclient role, to install oneclient:
+
+```yaml
+  - hosts: servers
+    roles:
+      - role: indigo-dc.oneclient
+        when: os_storage == 'onedata'
+```
 
 Example Playbook
 ----------------
