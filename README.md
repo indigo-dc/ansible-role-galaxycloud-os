@@ -32,15 +32,153 @@ For onedata reference data provider, the role depends on indigo-dc.oneclient rol
         when: os_storage == 'onedata'
 ```
 
+Variables
+---------
+The Galaxy path variables are the same of indigo-dc.galaxycloud.
+
+### Path ###
+
+``galaxy_user``: set linux user to launch the Galaxy portal (default: ``galaxy``).
+
+``GALAXY_UID``: set user UID (default: ``4001``).
+
+``galaxy_FS_path``: path to install Galaxy (default: ``/home/galaxy``).
+
+``galaxy_directory``: Galaxy directory (usually galaxy or galaxy-dist, default ``galaxy``).
+
+``galaxy_install_path``: Galaxy installation directory (default: ``/home/galaxy/galaxy``).
+
+``export_dir``: Galaxy userdata are stored here (defatult: ``/export``).
+
+``galaxy_custom_config_path``: Galaxy custom configuration files path (default: ``/etc/galaxy``).
+
+``galaxy_custom_script_path``: Galaxy custom script path (defautl: ``/usr/local/bin``).
+
+``galaxy_log_path``: log file directory (default: ``/var/log/galaxy``).
+
+``galaxy_instance_key_pub``: instance ssh public key to configure <galaxy_user> access.
+
+``galaxy_lrms``: enable  Galaxy virtual elastic cluster support. Currently supported local and slurm (default: ``local``, possible values: ``local, slurm``).
+
+### Main options ###
+
+``GALAXY_ADMIN_EMAIL``: Galaxy administrator e-mail address
+
+### Isolation specific vars ###
+
+``os_storage``: takes three possible values:
+
+  1. ``IaaS``: standard IaaS block storage volume.
+  2. ``onedata``: Onedata space is mounted for user data.
+  3. ``download``: IaaS block storage volume encrypted with ``aes-xts-plain64`` is mounted.
+
+### Onedata ###
+
+``onedata_dir``: onedata mountpoint. (default: ``/onedata``).
+
+.. Note::
+
+  Once onedata space is mounted, files existing before mount operation, will not be available until volume umount. For this reason we set it to ``/onedata`` to a differet path.
+
+``onedatactl_config_file``: set onedatactl config file (default: ``{{ galaxy_custom_config_path }}/onedatactl.ini``).
+
+``userdata_oneprovider``: set onedata oneprovider.
+
+``userdata_token``: set onedata access token.
+
+``userdata_space``: set space name.
+
+### Encryption ###
+
+``luks_lock_dir``: set luks lock file directory (default: ``/var/run/fast_luks``).
+
+``luks_success_file``: set success file. It signals to ansible to proceed (default: ``/var/run/fast-luks.success``).
+
+``luks_log_path``: set LUKS log path (default: ``/var/log/galaxy``).
+
+``luks_config_file``: set luksctl configuration file (default: ``/etc/galaxy/luks-cryptdev.ini``).
+
+``wait_timeout``: time to waint encryption password (default: 5 hours).
+
+``mail_from``: set mail from field (default: ``GalaxyCloud@elixir-italy.org``).
+
+``mail_subject``:  with the instructions to access and encrypt the volume is sent to the user (default: ``[ELIXIR-ITALY] GalaxyCloud encrypt password``).
+
+### LUKS specific variables ###
+
+``cipher_algorithm``: set cipher algorithm (default: ``aes-xts-plain64``).
+
+``keysize``: set key size (default: ``256``).
+
+``hash_algorithm``: set hash algorithm (default: ``sha256``).
+
+``device``: set device to mount (default: ``/dev/vdb``)
+
+``cryptdev``: set device mapper name (default:  ``/dev'crypt``).
+
+``mountpoint``: set mount point. Usually the same of ``export_dir`` (default:  ``{{ export_dir }}``).
+
+``filesystem``: set file system (default: ``ext4``).
+
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+IaaS configuration:
 
-    - hosts: localhost
-      connection: local
-      roles:
-        - { role: galaxycloud-os, GALAXY_ADMIN_EMAIL: "{{ galaxy_admin_mail }}", os_storage: "encryption", galaxy_instance_key_pub: "{{ galaxy_instance_key_pub }}" }
+```yaml
+  - hosts: servers
+    roles:
+      - role: indigo-dc.galaxycloud-os
+        os_storage: 'IaaS'
+        GALAXY_ADMIN_EMAIL: "admin@server.com"
+        galaxy_instance_key_pub: '<your_ssh_public_key>'
+
+      - role: indigo-dc.galaxycloud
+        GALAXY_ADMIN_EMAIL: "admin@server.com"
+        GALAXY_ADMIN_USERNAME: "admin"
+        GALAXY_VERSION: "release_17.05"
+        galaxy_instance_key_pub: "<your_ssh_public_key>"
+        enable_storage_advanced_options: true
+```
+
+Onedata configuration:
+
+```yaml
+  - hosts: servers
+    roles:
+      - role: indigo-dc.galaxycloud-os
+        os_storage: 'onedata'
+        GALAXY_ADMIN_EMAIL: "admin@server.com"
+        userdata_provider: 'oneprovider2.cloud.ba.infn.it'
+        userdata_token: '<your_access_token>'
+        userdata_space: '<your_onedata_space>'
+        galaxy_instance_key_pub: '<your_ssh_public_key>'
+
+      - role: indigo-dc.galaxycloud
+        GALAXY_ADMIN_EMAIL: "admin@server.com"
+        GALAXY_ADMIN_USERNAME: "admin"
+        GALAXY_VERSION: "release_17.05"
+        galaxy_instance_key_pub: "<your_ssh_public_key>"
+        enable_storage_advanced_options: true
+```
+
+LUKS configuration:
+
+```yaml
+  - hosts: servers
+    roles:
+      - role: indigo-dc.galaxycloud-os
+        os_storage: 'encryption'
+        GALAXY_ADMIN_EMAIL: "admin@server.com"
+        galaxy_instance_key_pub: '<your_ssh_public_key>'
+
+      - role: indigo-dc.galaxycloud
+        GALAXY_ADMIN_EMAIL: "admin@server.com"
+        GALAXY_ADMIN_USERNAME: "admin"
+        GALAXY_VERSION: "release_17.05"
+        galaxy_instance_key_pub: "<your_ssh_public_key>"
+        enable_storage_advanced_options: true
+```
 
 License
 -------
