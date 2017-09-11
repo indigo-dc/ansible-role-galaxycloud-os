@@ -6,7 +6,7 @@
     mode: a+x
   with_items:
     - { script: 'galaxyctl_libs.py.j2', destination: '{{ galaxy_custom_script_path }}/galaxyctl_libs.py', mode: 'a+x' }
-    - { script: 'onedatactl.py.j2', destination: '{{ galaxy_custom_script_path}}/ onedatactl', mode: 'a+x' }
+    - { script: 'onedatactl.py.j2', destination: '{{ galaxy_custom_script_path}}/onedatactl', mode: 'a+x' }
   become_user: root
   become_method: sudo
 
