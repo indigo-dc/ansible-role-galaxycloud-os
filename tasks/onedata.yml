@@ -27,6 +27,10 @@
     - { section: 'userdata', option: 'mountpoint', value: '{{ onedata_dir }}' }
     - { section: 'userdata', option: 'provider', value: '{{ userdata_provider }}' }
     - { section: 'userdata', option: 'token', value: '{{ userdata_token }}' }
+    - { section: 'userdata', option: 'insecure', value: '{{ insecure }}' }
+    - { section: 'userdata', option: 'nonempty', value: '{{ nonempty }}' }
+    - { section: 'userdata', option: 'uid', value: '{{ uid }}' }
+    - { section: 'userdata', option: 'gid', value: '{{ gid }}' }
   become_user: root
   become_method: sudo
 
