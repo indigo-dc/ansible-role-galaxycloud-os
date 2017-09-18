@@ -62,6 +62,10 @@ onedatactl_config_file: '{{ galaxy_custom_config_path }}/onedatactl.ini'
 userdata_oneprovider: 'not_a_provider'
 userdata_token: 'not_a_token'
 userdata_space: 'galaxy'
+insecure: True
+nonempty: True
+uid: '{{ GALAXY_UID }}'
+gid: '{{ GALAXY_UID }}'
 
 #________________________________
 # 3. encryption
