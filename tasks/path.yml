@@ -40,7 +40,7 @@
 
 - set_fact:
     galaxy_db_dir: '{{ onedata_dir }}/{{ userdata_space }}/database'
-    job_work_dir: '{{ onedata_dir }}/{{ userdata_space }}/job_work'
+    #job_work_dir: '{{ export_dir }}/job_work'
     nginx_upload_store_path: '{{ export_dir }}/tmp/nginx_upload_store'
   when: galaxy_lrms == "local" and os_storage == 'onedata'
 
