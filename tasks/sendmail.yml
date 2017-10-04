@@ -1,24 +1,24 @@
 ---
-- name: '[EL] Install mailutils'
-  yum: name={{item}}
-       state=present
-  with_items:
-    - mailx
-  become_user: root
-  become_method: sudo
-  when: ansible_os_family == "RedHat"
+#- name: '[EL] Install mailutils'
+#  yum: name={{item}}
+#       state=present
+#  with_items:
+#    - mailx
+#  become_user: root
+#  become_method: sudo
+#  when: ansible_os_family == "RedHat"
 
-- name: '[Ubuntu] Install mailutils'
-  apt: name={{item}}
-       state=present
-  with_items:
-    - mailutils
-  become_user: root
-  become_method: sudo
-  when: ansible_os_family == "Debian"
+#- name: '[Ubuntu] Install mailutils'
+#  apt: name={{item}}
+#       state=present
+#  with_items:
+#    - mailutils
+#  become_user: root
+#  become_method: sudo
+#  when: ansible_os_family == "Debian"
 
-- name: Send mail using linux mail client
-  shell: 'echo "Please ssh into your Galaxy instance: ssh -i <private_key> galaxy@{{ ansible_default_ipv4.address }} and and follow the instructions " | mail -s "{{ mail_subject}}" {{ GALAXY_ADMIN_EMAIL }} -- -f {{ mail_from }}'
+#- name: Send mail using linux mail client
+#  shell: 'echo "Please ssh into your Galaxy instance: ssh -i <private_key> galaxy@{{ ansible_default_ipv4.address }} and and follow the instructions " | mail -s "{{ mail_subject}}" {{ GALAXY_ADMIN_EMAIL }} -- -f {{ mail_from }}'
 
 - name: Copy indigo-dc.galaxycloud-os scripts
   template:
