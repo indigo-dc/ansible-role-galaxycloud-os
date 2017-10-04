@@ -1,14 +1,6 @@
 ---
-- name: Copy galaxyctl_libs scripts
-  template:
-    src: '{{ item.script }}'
-    dest: '{{ item.destination }}'
-    mode: a+x
-  with_items:
-    - { script: 'galaxyctl_libs.py.j2', destination: '{{ galaxy_custom_script_path }}/galaxyctl_libs.py', mode: 'a+x' }
-    - { script: 'onedatactl.py.j2', destination: '{{ galaxy_custom_script_path}}/onedatactl', mode: 'a+x' }
-  become_user: root
-  become_method: sudo
+- name: Mount Onedata Galaxy Data space
+  shell: 'oneclient -H {{ userdata_provider }} -t {{ userdata_token }} {{ onedata_dir }} --insecure -o nonempty'
 
 - name: Copy onedatactl.ini file
   template:
@@ -34,8 +26,17 @@
   become_user: root
   become_method: sudo
 
-- name: Mount Onedata Galaxy Data space
-  shell: 'oneclient -H {{ userdata_provider }} -t {{ userdata_token }} {{ onedata_dir }} --insecure -o nonempty'
+- name: Copy galaxyctl_libs scripts
+  template:
+    src: '{{ item.script }}'
+    dest: '{{ item.destination }}'
+    mode: a+x
+  with_items:
+    - { script: 'galaxyctl_libs.py.j2', destination: '{{ galaxy_custom_script_path }}/galaxyctl_libs.py', mode: 'a+x' }
+    - { script: 'onedatactl.py.j2', destination: '{{ galaxy_custom_script_path}}/onedatactl', mode: 'a+x' }
+  become_user: root
+  become_method: sudo
+
 
 #- name: Create {{ tool_deps_path }} directory
 #  file:

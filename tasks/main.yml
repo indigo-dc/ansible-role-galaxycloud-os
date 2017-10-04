@@ -9,13 +9,35 @@
 - include: prerequisites.yml
 
 # Use Onedata space as default storage
+
+- stat: path='{{ galaxy_custom_script_path }}/onedatactl'
+  register: onedatactl_installed
+
 - include: onedata.yml
-  when: os_storage == 'onedata'
+  when:
+    - os_storage == 'onedata'
+    - not galaxyctl_installed.stat.exists
   become_user: '{{ galaxy_user }}'
   become: true
 
 # LUKS format external volume
+- stat: path='{{ luks_success_file }}'
+  register: luks_success_file_created
+
+- stat: path='{{ luks_config_file }}'
+  register: luks_config_file_created
+
 - include: luks.yml
-  when: os_storage == 'encryption'
+  when:
+    - os_storage == 'encryption'
+    - not luks_success_file_created.stat.exists
+    - not luks_config_file_created.stat.exists
   become_user: '{{ galaxy_user }}'
   become: true
+
+#- include: nfs_restart.yml
+#  when:
+#    - os_storage == 'encryption'
+#    - galaxy_lrms == "slurm" 
+#  become_user: '{{ galaxy_user }}'
+#  become: true

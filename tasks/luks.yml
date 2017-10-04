@@ -81,11 +81,6 @@
     path: '{{ luks_config_file }}'
     state: present
 
-- name: Check if device mapper /dev/mapper/{{ cryptdev }} target exists
-  stat:
-    path: '/dev/mapper/{{ cryptdev }}'
-  register: crypt_device_register
-
 # After LUKS procedure, we need to set export_dir permissions and recreate tool_deps directory, since it has been deleted.
 - name: 'Set {{ export_dir }} permissions and recreate {{ tool_deps_path }} directory'
   file:
