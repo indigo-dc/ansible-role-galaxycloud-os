@@ -34,10 +34,3 @@
     - not luks_config_file_created.stat.exists
   become_user: '{{ galaxy_user }}'
   become: true
-
-#- include: nfs_restart.yml
-#  when:
-#    - os_storage == 'encryption'
-#    - galaxy_lrms == "slurm" 
-#  become_user: '{{ galaxy_user }}'
-#  become: true
