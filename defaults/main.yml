@@ -58,7 +58,7 @@ os_storage: "IaaS"
 # 2. onedata
 
 onedata_dir: '/onedata'
-onedatactl_config_file: '{{ galaxy_custom_config_path }}/onedatactl.ini'
+onedatactl_config_file: '/etc/galaxyctl/onedatactl.ini'
 userdata_oneprovider: 'not_a_provider'
 userdata_token: 'not_a_token'
 userdata_space: 'galaxy'
