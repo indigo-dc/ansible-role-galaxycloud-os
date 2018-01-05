@@ -9,7 +9,7 @@
 - include: prerequisites.yml
 
 # Use Onedata space as default storage
-- stat: path='{{ galaxy_custom_script_path }}/onedatactl'
+- stat: path='{{ onedatactl_config_file }}'
   register: onedatactl_installed
 
 - include: onedata.yml
