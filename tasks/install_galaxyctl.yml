@@ -4,6 +4,8 @@
     repo: 'https://github.com/mtangaro/galaxyctl.git'
     clone: yes
     dest: '{{ galaxy_FS_path }}/galaxyctl'
+  become_user: '{{ galaxy_user }}'
+  become: true
 
 - name: Install galaxyctl
   command: 'pip install .'
