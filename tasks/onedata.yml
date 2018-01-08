@@ -6,6 +6,7 @@
   copy:
     src: '/etc/galaxyctl/onedatactl.ini.sample'
     dest: '{{ onedatactl_config_file }}'
+    force: no
     remote_src: yes
   become_user: root
   become_method: sudo
