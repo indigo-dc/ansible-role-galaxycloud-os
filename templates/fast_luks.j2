@@ -280,7 +280,7 @@ function wipe_data(){
   echo "$info [$STAT] This might take time depending on the size & your machine!"
 
   #dd if=/dev/zero of=/dev/mapper/${cryptdev} bs=1M  status=progress
-  pv -tpreb /dev/zero | dd of=/dev/mapper/${cryptdev} bs=1M status=progress
+  pv -tpreb /dev/zero | dd of=/dev/mapper/${cryptdev} bs=1M status=progress;
 
   echo "$debug [$STAT] Block file /dev/mapper/${cryptdev} created."
   echo "$debug [$STAT] Wiping done."
