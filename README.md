@@ -104,7 +104,7 @@ The Galaxy path variables are the same of indigo-dc.galaxycloud.
 
 ``mail_subject``: with the instructions to access and encrypt the volume is sent to the user (default: ``[ELIXIR-ITALY] GalaxyCloud encrypt password``).
 
-Create block file
+Create block file:
 
 https://wiki.archlinux.org/index.php/Dm-crypt/Device_encryption
 
