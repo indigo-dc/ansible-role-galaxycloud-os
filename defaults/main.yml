@@ -88,3 +88,5 @@ device: '/dev/vdb'
 cryptdev: 'crypt'
 mountpoint: '{{ export_dir }}'
 filesystem: 'ext4'
+# Low level block storage deletion before encryption. Takes time and depends on external disk storage size.
+paranoic_mode: true

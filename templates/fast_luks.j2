@@ -366,7 +366,7 @@ function encrypt(){
     # Wipe data for security
     # WARNING This is going take time, depending on VM storage. Currently commented out
     if [[ $paranoic == true ]]; then
-      wipe_data
+      wipe_data >> "$LOGFILE" 2>&1
     fi
 
     # Create filesystem
