@@ -26,6 +26,8 @@ cryptdev='crypt'
 mountpoint='/export'
 filesystem='ext4'
 
+paranoic=false
+
 # luks ini file
 luks_cryptdev_file='{{ luks_config_file }}'
 
@@ -363,19 +365,21 @@ function encrypt(){
   (
     # Wipe data for security
     # WARNING This is going take time, depending on VM storage. Currently commented out
-    #wipe_data
+    if [[ $paranoic == true ]]; then
+      wipe_data
+    fi
 
     # Create filesystem
-    create_fsk >> "$LOGFILE" 2>&1
+    create_fs >> "$LOGFILE" 2>&1
 
     # Mount volume
     mount_vol >> "$LOGFILE" 2>&1
 
     # Create ini file
-    create_cryptdev_ini_filek >> "$LOGFILE" 2>&1
+    create_cryptdev_ini_file >> "$LOGFILE" 2>&1
 
     # LUKS encryption finished. Print end dialogue.
-    end_encrypt_procedurek >> "$LOGFILE" 2>&1
+    end_encrypt_procedure >> "$LOGFILE" 2>&1
 
     # Unlock once done.
     unlock >> "$LOGFILE" 2>&1
@@ -420,6 +424,8 @@ do
     -i|--interactive) INTERACTIVE=YES;; #TODO implement interactive mode
 
     --default) DEFAULT=YES;;
+
+    --paranoic-mode) paranoic=true;;
 
     -h|--help) HELP=YES;;
 
