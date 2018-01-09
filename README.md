@@ -102,7 +102,15 @@ The Galaxy path variables are the same of indigo-dc.galaxycloud.
 
 ``mail_from``: set mail from field (default: ``GalaxyCloud@elixir-italy.org``).
 
-``mail_subject``:  with the instructions to access and encrypt the volume is sent to the user (default: ``[ELIXIR-ITALY] GalaxyCloud encrypt password``).
+``mail_subject``: with the instructions to access and encrypt the volume is sent to the user (default: ``[ELIXIR-ITALY] GalaxyCloud encrypt password``).
+
+Create block file
+https://wiki.archlinux.org/index.php/Dm-crypt/Device_encryption
+https://wiki.archlinux.org/index.php/Dm-crypt/Drive_preparation
+https://wiki.archlinux.org/index.php/Disk_encryption#Preparing_the_disk
+Before encrypting a drive, it is recommended to perform a secure erase of the disk by overwriting the entire drive with random data.
+To prevent cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt.
+``paranoic_mode``: to enable block storage low level deletion set to true (default: ``false``).
 
 ### LUKS specific variables ###
 
