@@ -48,7 +48,7 @@
     line: '{{ item.command }}'
     state: present
   with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ galaxy_custom_script_path }}/fast-luks' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ galaxy_custom_script_path }}/fast-luks --paranoic-mode' }
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ galaxy_custom_script_path }}/kickout' }
 
 # check if /export is mountpoint before LUKS encryption

@@ -339,7 +339,7 @@ function end_encrypt_procedure(){
   echo ""
   # send signal to unclok waiting condition for automation software (e.g Ansible)
   echo "LUKS encryption completed." > $SUCCESS_FILE # WARNING DO NOT MODFIFY THIS LINE, THIS IS A CONTROL STRING FOR ANSIBLE
-  echo "$info [$STAT] SUCCESSFUL. You will be automatically kicked out by this server. Galaxy will be automatically installed."
+  echo "$info [$STAT] SUCCESSFUL."
 }
 
 #____________________________________
