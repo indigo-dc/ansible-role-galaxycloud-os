@@ -359,18 +359,27 @@ function encrypt(){
   # Check status
   encryption_status >> "$LOGFILE" 2>&1
   
-  # Wipe data for security
-  # WARNING This is going take time, depending on VM storage. Currently commented out
-  #wipe_data
+  # Run this in background. 
+  (
+    # Wipe data for security
+    # WARNING This is going take time, depending on VM storage. Currently commented out
+    #wipe_data
 
-  # Create filesystem
-  create_fs
+    # Create filesystem
+    create_fsk >> "$LOGFILE" 2>&1
 
-  # Mount volume
-  mount_vol
+    # Mount volume
+    mount_vol >> "$LOGFILE" 2>&1
 
-  # Create ini file
-  create_cryptdev_ini_file
+    # Create ini file
+    create_cryptdev_ini_filek >> "$LOGFILE" 2>&1
+
+    # LUKS encryption finished. Print end dialogue.
+    end_encrypt_procedurek >> "$LOGFILE" 2>&1
+
+    # Unlock once done.
+    unlock >> "$LOGFILE" 2>&1
+  ) &
 }
 
 ################################################################################
@@ -454,9 +463,3 @@ check_cryptsetup
 
 # Encrypt volume
 encrypt
-
-# LUKS encryption finished. Print end dialogue.
-end_encrypt_procedure
-
-# Unlock once done.
-unlock >> "$LOGFILE" 2>&1
