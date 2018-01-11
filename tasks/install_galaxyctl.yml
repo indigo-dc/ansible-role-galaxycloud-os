@@ -3,7 +3,7 @@
   command: '/usr/bin/galaxyctl --version'
   ignore_errors: true
   changed_when: false # read-only task
-  register: galaxy_is_installed
+  register: galaxyctl_is_installed
   become_user: root
   become_method: sudo
 
