@@ -1,5 +1,5 @@
---
-- name: Check pip
+---
+- name: Check galaxyctl
   command: '/usr/bin/galaxyctl --version'
   ignore_errors: true
   changed_when: false # read-only task
