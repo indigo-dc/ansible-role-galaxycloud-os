@@ -31,15 +31,13 @@
 #______________________________________
 # LUKSformat volume
 
-- name: Copy galaxyctl_libs scripts
+- name: Copy fast_luks scripts
   template:
     src: '{{ item.script }}'
     dest: '{{ item.destination }}'
     mode: a+x
   with_items:
     - { script: 'fast_luks.j2', destination: '{{ galaxy_custom_script_path }}/fast-luks', mode: 'a+x' }
-    - { script: 'galaxyctl_libs.py.j2', destination: '{{ galaxy_custom_script_path }}/galaxyctl_libs.py', mode: 'a+x' }
-    - { script: 'luksctl.py.j2', destination: '{{ galaxy_custom_script_path }}/luksctl', mode: 'a+x' }
     - { script: 'kickout.j2', destination: '{{ galaxy_custom_script_path }}/kickout', mode: 'a+x' }
   become_user: root
   become_method: sudo
@@ -52,6 +50,17 @@
   with_items:
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ galaxy_custom_script_path }}/fast-luks' }
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ galaxy_custom_script_path }}/kickout' }
+  when: not paranoic_mode|bool
+
+- name: Add luks scripts
+  lineinfile:
+    dest: '{{ item.dest }}'
+    line: '{{ item.command }}'
+    state: present
+  with_items:
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ galaxy_custom_script_path }}/fast-luks --paranoic-mode' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ galaxy_custom_script_path }}/kickout' }
+  when: paranoic_mode|bool
 
 # check if /export is mountpoint before LUKS encryption
 - include: check_mountpoint.yml
@@ -97,7 +106,7 @@
 # check if {{ export_dir }} is a mountpoint after LUKS encryption
 - include: check_mountpoint.yml
 
-- name: Remove automatic scripts
+- name: Remove fast_luks scripts automatism from bashrc
   lineinfile:
     dest: '{{ item.dest }}'
     line: '{{ item.command }}'

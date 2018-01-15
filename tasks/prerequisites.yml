@@ -52,5 +52,8 @@
 #______________________________________
 # Create directories
 # WARNING!!! Setup directories after galaxy user creation
-
 - include: path.yml
+
+#______________________________________
+# Install galaxyctl libs
+- include: install_galaxyctl.yml
