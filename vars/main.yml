@@ -1,2 +1,6 @@
 ---
 # vars file for ansible-role-galaxycloud-os
+
+#________________________________
+# galaxyctl path
+galaxyctl_path: '{{ galaxy_FS_path }}/.galaxyctl'
