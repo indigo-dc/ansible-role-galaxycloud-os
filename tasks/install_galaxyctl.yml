@@ -28,6 +28,8 @@
     update: yes
     dest: '{{ galaxyctl_path }}'
   when: galaxyctl_is_installed.rc != 0
+  become_user: '{{ galaxy_user }}'
+  become: true
 
 - name: Install galaxyctl
   pip:
