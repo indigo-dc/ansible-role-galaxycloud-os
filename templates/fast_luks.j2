@@ -15,8 +15,8 @@
 # This is by default for our use-case.
 
 STAT="fast-luks"
-LOGFILE="/tmp/luks$now.log"
-SUCCESS_FILE="/tmp/fast-luks.success"
+LOGFILE="{{ luks_log_path }}/luks$now.log"
+SUCCESS_FILE="{{ luks_success_file }}"
 
 # Defaults
 cipher_algorithm='aes-xts-plain64'
@@ -32,10 +32,10 @@ non_interactive=false
 foreground=false
 
 # luks ini file
-luks_cryptdev_file='/tmp/luks-cryptdev.ini'
+luks_cryptdev_file='{{ luks_config_file }}'
 
 # lockfile configuration
-LOCKDIR=/var/run/fast_luks
+LOCKDIR={{ luks_lock_dir }}
 PIDFILE=${LOCKDIR}/fast-luks.pid
 
 ################################################################################
