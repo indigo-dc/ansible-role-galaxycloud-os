@@ -77,8 +77,8 @@ luks_config_file: '{{ galaxy_custom_config_path }}/luks-cryptdev.ini'
 wait_timeout: 18000 # wait for 5 hous FIXME
 
 # mail details
-mail_from: "GalaxyCloud@elixir-italy.org"
-mail_subject: "[ELIXIR-ITALY] GalaxyCloud encrypt password"
+mail_from: "Laniakea@elixir-italy.org"
+mail_subject: "[ELIXIR-ITALY] Laniakea storage encryption"
 
 # encryption details
 cipher_algorithm: 'aes-xts-plain64'
