@@ -1,5 +1,4 @@
 ---
-
 - name: Check if {{ export_dir }} is mountpoint
   command: mountpoint -q {{ export_dir }} # -q is --quiet option
   register: volume_stat
@@ -13,6 +12,8 @@
 
 - name: 'Try to mount /dev/vdb to {{ export_dir }}'
   command:  'mount /dev/vdb {{ export_dir }}'
+  become_user: root
+  become_method: sudo
   when: volume_stat.rc != 0
   register: mount_stat
 
