@@ -26,6 +26,8 @@
   filesystem:
     fstype: ext4
     dev: '{{ device }}'
+  become_user: root
+  become_method: sudo
   when: volume_stat.rc != 0
 
 - name: 'Try to mount /dev/vdb to {{ export_dir }}'
