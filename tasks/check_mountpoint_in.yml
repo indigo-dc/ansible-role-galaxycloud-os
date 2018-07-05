@@ -10,6 +10,12 @@
     msg: 'ERROR: mountpoint -q {{ export_dir }} returned non-zero EXIT CODE: {{ export_dir }} is not a mountpoint.'
   when: volume_stat.rc != 0
 
+- name: Create a ext4 filesystem on /dev/vdb
+  filesystem:
+    fstype: ext4
+    dev: /dev/vdb
+  when: volume_stat.rc != 0
+
 - name: 'Try to mount /dev/vdb to {{ export_dir }}'
   command:  'mount /dev/vdb {{ export_dir }}'
   become_user: root
