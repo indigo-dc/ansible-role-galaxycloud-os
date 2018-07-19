@@ -418,6 +418,7 @@ function encrypt(){
       # LUKS encryption finished. Print end dialogue.
       end_encrypt_procedure >> "$LOGFILE" 2>&1  
     ) &
+    disown
 
   elif [[ $foreground == true ]]; then
 
