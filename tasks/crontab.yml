@@ -8,7 +8,7 @@
 
 - name: Copy reboot warning script
   template:
-    src: 'reboot_warning.sh'
+    src: 'reboot_warning.sh.j2'
     dest: '{{ galaxy_custom_script_path }}/reboot-warning'
     mode: a+x
 
