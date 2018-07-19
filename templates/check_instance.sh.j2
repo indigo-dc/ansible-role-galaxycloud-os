@@ -108,6 +108,7 @@ function __stat_ini_file(){
 function cfg.parser ()
 # http://theoldschooldevops.com/2008/02/09/bash-ini-parser/
 {
+{% raw %}
 	IFS=$'\n' && ini=( $(<$1) ) # convert to line-array
 	ini=( ${ini[*]//;*/} )      # remove comments with ;
 	ini=( ${ini[*]//\#*/} )     # remove comments with #
@@ -124,6 +125,7 @@ function cfg.parser ()
 	ini[0]="" # remove first element
 	ini[${#ini[*]} + 1]='}'    # add the last brace
 	eval "$(echo "${ini[*]}")" # eval the result
+{% endraw %}
 }
 
 function __read_ini_file(){
