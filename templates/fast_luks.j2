@@ -399,7 +399,7 @@ function encrypt(){
   if [[ $foreground == false ]]; then
 
     # Run this in background. 
-    echo_info "Run script in backgroud."
+    echo_info "Run script in background."
 
     (
       # Wipe data for security
@@ -429,7 +429,7 @@ function encrypt(){
     create_cyptdev_ini_file
     end_encrypt_procedure
 
-  fi # end foregroud if
+  fi # end foreground if
 
   # Unlock once done.
   unlock >> "$LOGFILE" 2>&1
