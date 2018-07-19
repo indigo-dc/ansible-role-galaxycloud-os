@@ -13,7 +13,7 @@
     mode: a+x
 
 - name: Send mail allert after reboot
-    cron:
+  cron:
     name: "Chek instance after reboot"
     special_time: reboot
     job: "/usr/local/bin/reboot-warning"
