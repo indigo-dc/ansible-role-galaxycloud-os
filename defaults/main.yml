@@ -96,4 +96,4 @@ filesystem: 'ext4'
 # Before encrypting a drive, it is recommended to perform a secure erase of the disk by overwriting the entire drive with random data.
 # To prevent cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt.
 # Low level block storage deletion before encryption. Takes time and depends on external disk storage size.
-paranoid_mode: true
+paranoid_mode: false
