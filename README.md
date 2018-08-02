@@ -116,7 +116,7 @@ Before encrypting a drive, it is recommended to perform a secure erase of the di
 
 To prevent cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt.
 
-``paranoic_mode``: to enable block storage low level deletion set to true (default: ``false``).
+``paranoid_mode``: to enable block storage low level deletion set to true (default: ``false``).
 
 ### LUKS specific variables ###
 

@@ -9,7 +9,8 @@
 - include: prerequisites.yml
 
 # Use Onedata space as default storage
-- stat: path='{{ onedatactl_config_file }}'
+- stat:
+    path: '{{ onedatactl_config_file }}'
   register: onedatactl_installed
 
 - include: onedata.yml
@@ -20,10 +21,12 @@
   become: true
 
 # LUKS format external volume
-- stat: path='{{ luks_success_file }}'
+- stat:
+    path: '{{ luks_success_file }}'
   register: luks_success_file_created
 
-- stat: path='{{ luks_config_file }}'
+- stat:
+    path: '{{ luks_config_file }}'
   register: luks_config_file_created
 
 - include: luks.yml
@@ -33,3 +36,7 @@
     - not luks_config_file_created.stat.exists
   become_user: '{{ galaxy_user }}'
   become: true
+
+- include: crontab.yml
+
+- include: custom.yml

@@ -1,0 +1,19 @@
+---
+- name: Include galaxy-startup on reboot
+  cron:
+    name: "Start Galaxy"
+    special_time: reboot
+    job: "/usr/local/bin/galaxy-startup"
+  when: os_storage == 'IaaS'
+
+- name: Copy reboot warning script
+  template:
+    src: 'reboot_warning.sh.j2'
+    dest: '{{ galaxy_custom_script_path }}/reboot-warning'
+    mode: a+x
+
+- name: Send mail allert after reboot
+  cron:
+    name: "Chek instance after reboot"
+    special_time: reboot
+    job: "/usr/local/bin/reboot-warning"
