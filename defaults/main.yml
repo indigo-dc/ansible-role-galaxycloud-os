@@ -29,6 +29,7 @@ galaxy_instance_url: "http://{{ ansible_default_ipv4.address }}/galaxy/"
 # Galaxy custom configuration files and script path
 galaxy_custom_config_path: '/etc/galaxy'
 galaxy_custom_script_path: '/usr/local/bin'
+custom_utils_path: '{{ galaxy_FS_path }}/.laniakea_utils'
 
 # Galaxy instance ssh public key
 galaxy_instance_key_pub: ""
@@ -76,10 +77,6 @@ luks_log_path: '{{ galaxy_log_path }}'
 luks_config_file: '{{ galaxy_custom_config_path }}/luks-cryptdev.ini'
 wait_timeout: 18000 # wait for 5 hous FIXME
 
-# mail details
-mail_from: "GalaxyCloud@elixir-italy.org"
-mail_subject: "[ELIXIR-ITALY] GalaxyCloud encrypt password"
-
 # encryption details
 cipher_algorithm: 'aes-xts-plain64'
 keysize: '256'
@@ -96,4 +93,4 @@ filesystem: 'ext4'
 # Before encrypting a drive, it is recommended to perform a secure erase of the disk by overwriting the entire drive with random data.
 # To prevent cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt.
 # Low level block storage deletion before encryption. Takes time and depends on external disk storage size.
-paranoic_mode: false
+paranoid_mode: false

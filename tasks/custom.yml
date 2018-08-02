@@ -1,0 +1,31 @@
+---
+#______________________________________
+# Configure {{ galaxy_user }} .bashrc to show instance status at startup
+
+- name: 'Copy check_instance script'
+  template:
+    src: 'check_instance.sh.j2'
+    dest: '{{ custom_utils_path }}/check_instance'
+    mode: a+x
+
+- name: Add check instance script to bashrc
+  lineinfile:
+    dest: '/home/{{ galaxy_user }}/.bashrc'
+    line: '{{ custom_utils_path }}/check_instance'
+    state: present
+
+# Configure success mail to be sent once the deployment is done.
+# We create it here, because only this role has all the information
+# to correctly create the mail.
+# It has to be sent by galaxycloud, tools, or refdata, depending
+# on which one is the last run role.
+- name: Configure success mail to be sent once deployment is done
+  template:
+    src: 'mail_wrapper.sh.j2'
+    dest: '{{ custom_utils_path }}/mail_wrapper.sh'
+    mode: a+x
+
+- name: Set success mail content
+  template:
+    src: 'mail_success.html.j2'
+    dest: '{{ custom_utils_path }}/mail_success.html.j2'
