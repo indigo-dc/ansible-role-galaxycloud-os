@@ -8,6 +8,9 @@
 # Install Galaxy dependencies
 - include: prerequisites.yml
 
+# include mail variables for luks and user warnings
+- include_vars: mail_vars.yml
+
 # Use Onedata space as default storage
 - stat:
     path: '{{ onedatactl_config_file }}'
@@ -38,6 +41,5 @@
   become: true
 
 # Finish instance configuration
-- include_vars: mail_vars.yml
 - include: crontab.yml
 - include: custom.yml
