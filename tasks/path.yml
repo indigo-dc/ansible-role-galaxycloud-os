@@ -23,6 +23,7 @@
     - '{{ tool_deps_path }}'
     - '{{ galaxy_log_path }}'
     - '{{ galaxy_custom_config_path }}'
+    - '{{ custom_utils_path }}'
   become_user: root
   become_method: sudo
 

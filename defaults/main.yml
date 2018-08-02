@@ -29,6 +29,7 @@ galaxy_instance_url: "http://{{ ansible_default_ipv4.address }}/galaxy/"
 # Galaxy custom configuration files and script path
 galaxy_custom_config_path: '/etc/galaxy'
 galaxy_custom_script_path: '/usr/local/bin'
+custom_utils_path: '{{ galaxy_FS_path }}/.laniakea_utils'
 
 # Galaxy instance ssh public key
 galaxy_instance_key_pub: ""
@@ -75,10 +76,6 @@ luks_success_file: '/var/run/fast-luks.success'
 luks_log_path: '{{ galaxy_log_path }}'
 luks_config_file: '{{ galaxy_custom_config_path }}/luks-cryptdev.ini'
 wait_timeout: 18000 # wait for 5 hous FIXME
-
-# mail details
-mail_from: "Laniakea@elixir-italy.org"
-mail_subject: "[ELIXIR-ITALY] Laniakea storage encryption"
 
 # encryption details
 cipher_algorithm: 'aes-xts-plain64'
