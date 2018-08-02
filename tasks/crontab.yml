@@ -3,7 +3,7 @@
   cron:
     name: "Start Galaxy"
     special_time: reboot
-    job: "/usr/local/bin/galaxy-startup"
+    job: "{{ galaxy_custom_script_path }}/galaxy-startup"
   when: os_storage == 'IaaS'
 
 - name: Copy reboot warning script

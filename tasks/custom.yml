@@ -19,8 +19,6 @@
 # to correctly create the mail.
 # It has to be sent by galaxycloud, tools, or refdata, depending
 # on which one is the last run role.
-- include_vars: mail_vars.yml
-
 - name: Configure success mail to be sent once deployment is done
   template:
     src: 'mail_wrapper.sh.j2'
