@@ -37,6 +37,7 @@
   become_user: '{{ galaxy_user }}'
   become: true
 
+# Finish instance configuration
+- include_vars: mail_vars.yml
 - include: crontab.yml
-
 - include: custom.yml
