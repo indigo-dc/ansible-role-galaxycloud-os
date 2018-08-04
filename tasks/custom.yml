@@ -28,4 +28,4 @@
 - name: Set success mail content
   template:
     src: 'mail_success.html.j2'
-    dest: '{{ custom_utils_path }}/mail_success.html.j2'
+    dest: '{{ custom_utils_path }}/mail_success.html'
