@@ -39,8 +39,11 @@ galaxy_lrms: local
 
 #________________________________
 # Galaxy administrator e-mail address
-
 GALAXY_ADMIN_EMAIL: "admin@server.com"
+
+# Galaxy administrator password.
+# It is hard coded. To be changed by the administrator.
+GALAXY_ADMIN_PASSWORD: "galaxy_admin_password"
 
 #________________________________
 # Isolation specific vars
