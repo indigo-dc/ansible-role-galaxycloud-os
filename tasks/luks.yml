@@ -50,7 +50,7 @@
     line: '{{ item.command }}'
     state: present
   with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks.sh' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast_luks.sh' }
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
   when: not paranoid_mode|bool
 
@@ -60,7 +60,7 @@
     line: '{{ item.command }}'
     state: present
   with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks.sh --paranoid-mode' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast_luks.sh --paranoid-mode' }
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
   when: paranoid_mode|bool
 
