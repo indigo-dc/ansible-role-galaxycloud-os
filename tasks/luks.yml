@@ -91,7 +91,7 @@
   wait_for:
     path: '{{ volume_setup_success_file }}' # FIXED in fast-luks script
     timeout: '{{ wait_timeout }}'
-    search_regex: "LUKS encryption completed."
+    search_regex: "Volume setup completed."
 
 - name: 'Check {{ luks_config_file }}. If not present something went wrong'
   wait_for:
