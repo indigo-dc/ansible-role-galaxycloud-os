@@ -51,7 +51,7 @@
     state: present
   with_items:
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/fast-luks/kickout' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
   when: not paranoid_mode|bool
 
 - name: Add luks scripts
@@ -61,7 +61,7 @@
     state: present
   with_items:
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh --paranoid-mode' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/fast-luks/kickout' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
   when: paranoid_mode|bool
 
 # check if /export is mountpoint before LUKS encryption
@@ -121,7 +121,7 @@
     state: absent
   with_items:
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/fast-luks/kickout' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
   when: not paranoid_mode|bool
 
 - name: Remove fast_luks scripts automatism from bashrc if paranoid-mode is on
@@ -131,5 +131,5 @@
     state: absent
   with_items:
     - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh --paranoid-mode' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/fast-luks/kickout' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
   when: paranoid_mode|bool
