@@ -2,10 +2,9 @@
 
 # This script kick out the user from the VM after luks format.
 # Needs to be sourced
-
-echo 'You will automatically exit from this server.'
+echo ""
+echo 'You will automatically log-out from this server.'
 echo 'Galaxy will be automatically installed once the encryption procedure ends.'
-
-for i in {5..1};do echo -n "$i." && sleep 1; done
-echo -e '\nExiting.... Goodbye!'
+#for i in {5..1};do echo -n "$i." && sleep 1; done
+echo -e 'Exiting... Goodbye!'
 exit

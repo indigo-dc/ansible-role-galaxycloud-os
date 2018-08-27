@@ -32,16 +32,17 @@
 #______________________________________
 # LUKSformat volume
 
-- name: Copy fast_luks scripts
+- name: Clone fast_luks script
+  git:
+    repo: 'https://github.com/Laniakea-elixir-it/fast-luks.git'
+    dest: '{{ custom_utils_path }}/fast-luks'
+    version: 'devel'
+
+- name: Copy kickout scripts
   template:
-    src: '{{ item.script }}'
-    dest: '{{ item.destination }}'
+    src: 'kickout.j2'
+    dest: '{{ custom_utils_path }}/kickout'
     mode: a+x
-  with_items:
-    - { script: 'fast_luks.j2', destination: '{{ galaxy_custom_script_path }}/fast-luks', mode: 'a+x' }
-    - { script: 'kickout.j2', destination: '{{ galaxy_custom_script_path }}/kickout', mode: 'a+x' }
-  become_user: root
-  become_method: sudo
 
 - name: Add luks scripts
   lineinfile:
@@ -49,8 +50,8 @@
     line: '{{ item.command }}'
     state: present
   with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ galaxy_custom_script_path }}/fast-luks' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ galaxy_custom_script_path }}/kickout' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
   when: not paranoid_mode|bool
 
 - name: Add luks scripts
@@ -59,8 +60,8 @@
     line: '{{ item.command }}'
     state: present
   with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ galaxy_custom_script_path }}/fast-luks --paranoid-mode' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ galaxy_custom_script_path }}/kickout' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh --paranoid-mode' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
   when: paranoid_mode|bool
 
 # check if /export is mountpoint before LUKS encryption
@@ -71,20 +72,26 @@
 
 - name: Wait for fast-luks start (pidfile creation)
   wait_for:
-    path: /var/run/fast_luks/fast-luks.pid
+    path: /var/run/fast_luks/fast-luks-encryption.pid
     timeout: '{{ wait_timeout }}'
 
 - name: Wait for fast-luks finish (pidfile deletion)
   wait_for:
-    path: /var/run/fast_luks/fast-luks.pid
+    path: /var/run/fast_luks/fast-luks-volume-setup.pid
     state: absent
     timeout: '{{ wait_timeout }}'
 
-- name: 'Wait for {{ luks_success_file }} file'
+- name: 'Wait for LUKS success file: {{ luks_success_file }}'
   wait_for:
     path: '{{ luks_success_file }}' # FIXED in fast-luks script
     timeout: '{{ wait_timeout }}'
     search_regex: "LUKS encryption completed."
+
+- name: 'Wait for volume setup success file: {{ volume_setup_success_file }}'
+  wait_for:
+    path: '{{ volume_setup_success_file }}' # FIXED in fast-luks script
+    timeout: '{{ wait_timeout }}'
+    search_regex: "Volume setup completed."
 
 - name: 'Check {{ luks_config_file }}. If not present something went wrong'
   wait_for:
@@ -113,5 +120,16 @@
     line: '{{ item.command }}'
     state: absent
   with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ galaxy_custom_script_path }}/fast-luks' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ galaxy_custom_script_path }}/kickout' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
+  when: not paranoid_mode|bool
+
+- name: Remove fast_luks scripts automatism from bashrc if paranoid-mode is on
+  lineinfile:
+    dest: '{{ item.dest }}'
+    line: '{{ item.command }}'
+    state: absent
+  with_items:
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh --paranoid-mode' }
+    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
+  when: paranoid_mode|bool

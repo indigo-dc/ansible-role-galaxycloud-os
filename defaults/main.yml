@@ -75,7 +75,8 @@ gid: '{{ GALAXY_UID }}'
 # 3. encryption
 
 luks_lock_dir: '/var/run/fast_luks'
-luks_success_file: '/var/run/fast-luks.success'
+luks_success_file: '/var/run/fast-luks-encryption.success'
+volume_setup_success_file: '/var/run/fast-luks-volume-setup.success'
 luks_log_path: '{{ galaxy_log_path }}'
 luks_config_file: '{{ galaxy_custom_config_path }}/luks-cryptdev.ini'
 wait_timeout: 18000 # wait for 5 hous FIXME
@@ -96,4 +97,4 @@ filesystem: 'ext4'
 # Before encrypting a drive, it is recommended to perform a secure erase of the disk by overwriting the entire drive with random data.
 # To prevent cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt.
 # Low level block storage deletion before encryption. Takes time and depends on external disk storage size.
-paranoid_mode: false
+paranoid_mode: true
