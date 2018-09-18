@@ -2,6 +2,8 @@
 
 # This script kick out the user from the VM after luks format.
 # Needs to be sourced
+ec=$?
+if [[ $ec != 0 ]]; then exit $ec; fi
 echo ""
 echo 'You will automatically log-out from this server.'
 echo 'Galaxy will be automatically installed once the encryption procedure ends.'
