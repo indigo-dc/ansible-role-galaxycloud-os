@@ -29,23 +29,6 @@
   when: ansible_os_family == "Debian" and ansible_distribution_version == "16.04" and ansible_virtualization_type == "docker"
 
 #______________________________________
-# SCP does not work if a script is run or sourced from bashrc.
-# This fix this behaviour.
-- name: Fix scp on CentOS if bashrc is used to source scripts
-  blockinfile:
-    dest: '/home/{{ galaxy_user }}/.bashrc'
-    marker: ""
-    block: | 
-      # If not running interactively, don't do anything
-      case $- in
-          *i*) ;;
-          *) return;;
-      esac
-  become: true
-  become_user: '{{ galaxy_user }}'
-  when: ansible_os_family == "RedHat"
-
-#______________________________________
 # Create Galaxy user
 
 - name: '[EL] Create user {{ galaxy_user }} on the server'
@@ -87,3 +70,21 @@
   register: authorized_key_root_result
   failed_when: ('invalid key specified' in authorized_key_root_result.stderr)
   ignore_errors: true
+
+#______________________________________
+# SCP does not work if a script is run or sourced from bashrc.
+# This fix this behaviour.
+- name: Fix scp on CentOS if bashrc is used to source scripts
+  blockinfile:
+    dest: '/home/{{ galaxy_user }}/.bashrc'
+    marker: "###"
+    insertbefore: "# Source Galaxy virutalenv"
+    block: |
+      # If not running interactively, don't do anything
+      case $- in
+          *i*) ;;
+          *) return;;
+      esac
+  become: true
+  become_user: '{{ galaxy_user }}'
+  when: ansible_os_family == "RedHat"
