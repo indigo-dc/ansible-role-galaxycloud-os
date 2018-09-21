@@ -77,7 +77,7 @@
 - name: Fix scp on CentOS if bashrc is used to source scripts
   blockinfile:
     dest: '/home/{{ galaxy_user }}/.bashrc'
-    marker: "###"
+    marker: "### {mark} fix scp if bashrc used to source script ###"
     insertbefore: "# Source Galaxy virutalenv"
     block: |
       # If not running interactively, don't do anything
