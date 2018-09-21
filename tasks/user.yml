@@ -5,13 +5,13 @@
 #______________________________________
 # [Docker] Install sudo and sudoers fix
 
-- name: '[EL] [Docker] Install sudo'
+- name: '[EL][Docker] Install sudo'
   yum:
     name: 'sudo'
     state: present
   when: (ansible_os_family == "RedHat" and ansible_virtualization_type == "docker")
 
-- name: '[EL] [Docker] Edit sudoers to remove requiretty option'
+- name: '[EL][Docker] Edit sudoers to remove requiretty option'
   lineinfile:
     dest: '/etc/sudoers'
     regexp: '{{ item.regexp }}'
@@ -22,7 +22,7 @@
     - { regexp: 'Defaults    requiretty' }
   when: (ansible_os_family == "RedHat" and ansible_virtualization_type == "docker")
 
-- name: '[Ubuntu 16.04] [Docker] Install sudo'
+- name: '[Ubuntu 16.04][Docker] Install sudo'
   apt:
     name: sudo
     state: present
@@ -70,3 +70,21 @@
   register: authorized_key_root_result
   failed_when: ('invalid key specified' in authorized_key_root_result.stderr)
   ignore_errors: true
+
+#______________________________________
+# SCP does not work if a script is run or sourced from bashrc.
+# This fix this behaviour.
+- name: Fix scp on CentOS if bashrc is used to source scripts
+  blockinfile:
+    dest: '/home/{{ galaxy_user }}/.bashrc'
+    marker: "###"
+    insertbefore: "# Source Galaxy virutalenv"
+    block: |
+      # If not running interactively, don't do anything
+      case $- in
+          *i*) ;;
+          *) return;;
+      esac
+  become: true
+  become_user: '{{ galaxy_user }}'
+  when: ansible_os_family == "RedHat"
