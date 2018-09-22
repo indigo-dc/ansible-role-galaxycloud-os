@@ -20,11 +20,11 @@ function __su_check(){
 #____________________________________
 # Check if Galaxy instance by curl
 function __galaxy_curl(){
-  if curl -s --head  --request GET ${URL} | grep "200 OK" > /dev/null
+  if curl -s -m 10 --head  --request GET ${URL} | grep "200 OK" > /dev/null
   then
     return 0
   else
-    if curl -s --head  --request GET ${URL} | grep "302 Found" > /dev/null
+    if curl -s -m 10 --head  --request GET ${URL} | grep "302 Found" > /dev/null
     then
       return 0
     else
@@ -36,6 +36,7 @@ function __galaxy_curl(){
 #____________________________________
 # Show galaxy status
 function __galaxy_url_status(){
+  echo 'Contacting Galaxy (wait for 10 seconds)...'
   __galaxy_curl &> /dev/null
   code=$?
   if [ $code -eq "0" ]; then 
