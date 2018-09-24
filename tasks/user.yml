@@ -76,7 +76,7 @@
 # This fix this behaviour.
 - name: Fix scp on CentOS if bashrc is used to source scripts
   blockinfile:
-    dest: '/home/{{ galaxy_user }}/.bashrc'
+    dest: "# Uncomment the following line if you don't like systemctl's auto-paging feature:"
     marker: "### {mark} fix scp if bashrc used to source script ###"
     insertbefore: "# Source Galaxy virutalenv"
     block: |
