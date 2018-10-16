@@ -1,0 +1,8 @@
+---
+- name: Send success mail once galaxy is ready.
+  mail:
+    from: '{{ mail_from }}'
+    to: "{{ GALAXY_ADMIN_EMAIL }}"
+    subject: '{{ success_mail_subject }}'
+    body: '{{ lookup("file", "{{ custom_utils_path }}/mail_success.html") }}'
+    subtype: html
