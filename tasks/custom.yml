@@ -21,8 +21,8 @@
 # on which one is the last run role.
 - name: Configure success mail to be sent once deployment is done
   template:
-    src: 'mail_wrapper.sh.j2'
-    dest: '{{ custom_utils_path }}/mail_wrapper.sh'
+    src: 'mail_wrapper.yaml.j2'
+    dest: '{{ custom_utils_path }}/mail_wrapper.yaml'
     mode: a+x
 
 - name: Set success mail content
