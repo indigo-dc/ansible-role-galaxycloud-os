@@ -16,10 +16,10 @@
                                 This is an automatically generated notification mail<BR>
                                 YOU DO NOT NEED TO ANSWER THIS MESSAGE<BR>
                                 <p>
-                                You are requiring an Encrypted Galaxy server. To insert your passphrase you have to login on it through SSH<BR>
+                                You have requested an Encrypted Galaxy server. To proceed we need you to login to the new Galaxy instance and provide a passphrase.<BR>
                                 <p>
-                                Please ssh into your Galaxy instance using the {{ galaxy_user }} user:<BR>
-                                ssh -i your_private_key {{ galaxy_user}}@{{ ansible_default_ipv4.address }}<BR>
+                                Please, ssh into your Galaxy instance using the {{ galaxy_user }} user:<BR>
+                                ssh -i your_private_ssh_key {{ galaxy_user}}@{{ ansible_default_ipv4.address }}<BR>
                                 <p>
                                 You will be automatically redirected to the encrypt script.<BR>
                                 <p>
@@ -31,13 +31,12 @@
                                 2. Verify passphrase<BR>
                                 3. Unlock your volume<BR>
                                 <p>
-                                Finally the script will automatically close this connection.<BR>
+                                Finally the script will automatically close the connection.<BR>
                                 <p>
-                                Please find attached to this mail a detailed description of the encryption procedure, also available <a href="http://laniakea.readthedocs.io/en/latest/FS_encryption_procedure.html">here</a>.
+                                A detailed description of the encryption procedure is attached to this mail.
                                 <p>
                                 If you need support please contact us to: laniakea.helpdesk@gmail.com
                                 <p>
-                                Software glitches and bugs can occasionally be encoutered.
                                 The best way to report a bug is to open an issue on our GitHub <a href="https://github.com/Laniakea-elixir-it/elixir-italy-science-gateway/issues">repository</a>.
                                 <p> 
                                 Kind Regards. <BR>
