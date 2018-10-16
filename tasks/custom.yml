@@ -19,13 +19,13 @@
 # to correctly create the mail.
 # It has to be sent by galaxycloud, tools, or refdata, depending
 # on which one is the last run role.
+- name: Set success mail content
+  template:
+    src: 'mail_success.html.j2'
+    dest: '{{ custom_utils_path }}/mail_success.html'
+
 - name: Configure success mail to be sent once deployment is done
   template:
     src: 'mail_wrapper.yaml.j2'
     dest: '{{ custom_utils_path }}/mail_wrapper.yaml'
     mode: a+x
-
-- name: Set success mail content
-  template:
-    src: 'mail_success.html.j2'
-    dest: '{{ custom_utils_path }}/mail_success.html'
