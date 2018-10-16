@@ -4,5 +4,5 @@
     from: '{{ mail_from }}'
     to: "{{ GALAXY_ADMIN_EMAIL }}"
     subject: '{{ success_mail_subject }}'
-    body: '{{ lookup("file", "{{ custom_utils_path }}/mail_success.html") }}'
+    body: '{% raw -%}{{ lookup("file", "{% endraw -%}{{ custom_utils_path }}{% raw -%}/mail_success.html") }}{% endraw -%}'
     subtype: html

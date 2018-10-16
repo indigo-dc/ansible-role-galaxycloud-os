@@ -28,4 +28,3 @@
   template:
     src: 'mail_wrapper.yaml.j2'
     dest: '{{ custom_utils_path }}/mail_wrapper.yaml'
-    mode: a+x
