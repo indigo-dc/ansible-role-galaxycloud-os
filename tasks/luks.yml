@@ -6,9 +6,10 @@
 
 - name: '[EL] Install packages'
   yum:
-    name: '{{ item }}'
+    name: '{{ packages }}'
     state: present
-  with_items:
+  vars:
+    packages:
     - cryptsetup-luks
     - pv
   become_user: root
@@ -20,9 +21,10 @@
 
 - name: '[Ubuntu] Install packages'
   apt:
-    name: '{{ item }}'
+    name: '{{ packages }}'
     state: present
-  with_items:
+  vars:
+    packages:
     - cryptsetup
     - pv
   become_user: root
@@ -36,50 +38,18 @@
   git:
     repo: 'https://github.com/Laniakea-elixir-it/fast-luks.git'
     dest: '{{ custom_utils_path }}/fast-luks'
-    version: 'devel'
-
-- name: Copy kickout scripts
-  template:
-    src: 'kickout.j2'
-    dest: '{{ custom_utils_path }}/kickout'
-    mode: a+x
-
-- name: Add luks scripts
-  lineinfile:
-    dest: '{{ item.dest }}'
-    line: '{{ item.command }}'
-    state: present
-  with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
-  when: not paranoid_mode|bool
-
-- name: Add luks scripts
-  lineinfile:
-    dest: '{{ item.dest }}'
-    line: '{{ item.command }}'
-    state: present
-  with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh --paranoid-mode' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
-  when: paranoid_mode|bool
+    version: 'vault'
 
 # check if /export is mountpoint before LUKS encryption
 - include: check_mountpoint_in.yml
 
-# send a mail to the administrator: Notification simulation
-- include: sendmail.yml
+- name: "Encrypt storage"
+  command: "{{ custom_utils_path }}/fast-luks/fast_luks.sh -n -r 100 --foreground"
+  when: not paranoid_mode|bool
 
-- name: Wait for fast-luks start (pidfile creation)
-  wait_for:
-    path: /var/run/fast_luks/fast-luks-encryption.pid
-    timeout: '{{ wait_timeout }}'
-
-- name: Wait for fast-luks finish (pidfile deletion)
-  wait_for:
-    path: /var/run/fast_luks/fast-luks-volume-setup.pid
-    state: absent
-    timeout: '{{ wait_timeout }}'
+- name: "Encrypt and wipe storage"
+  command: "{{ custom_utils_path }}/fast-luks/fast_luks.sh -n -r 100 --foreground --paranoid-mode"
+  when: paranoid_mode|bool
 
 - name: 'Wait for LUKS success file: {{ luks_success_file }}'
   wait_for:
@@ -113,23 +83,3 @@
 
 # check if {{ export_dir }} is a mountpoint after LUKS encryption
 - include: check_mountpoint_out.yml
-
-- name: Remove fast_luks scripts automatism from bashrc
-  lineinfile:
-    dest: '{{ item.dest }}'
-    line: '{{ item.command }}'
-    state: absent
-  with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
-  when: not paranoid_mode|bool
-
-- name: Remove fast_luks scripts automatism from bashrc if paranoid-mode is on
-  lineinfile:
-    dest: '{{ item.dest }}'
-    line: '{{ item.command }}'
-    state: absent
-  with_items:
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'sudo {{ custom_utils_path }}/fast-luks/fast_luks.sh --paranoid-mode' }
-    - { dest: '/home/{{ galaxy_user }}/.bashrc', command: 'source {{ custom_utils_path }}/kickout' }
-  when: paranoid_mode|bool
