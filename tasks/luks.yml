@@ -46,10 +46,14 @@
 - name: "Encrypt storage"
   command: "{{ custom_utils_path }}/fast-luks/fast_luks.sh -n -r 100 --foreground"
   when: not paranoid_mode|bool
+  become_user: root
+  become_method: sudo
 
 - name: "Encrypt and wipe storage"
   command: "{{ custom_utils_path }}/fast-luks/fast_luks.sh -n -r 100 --foreground --paranoid-mode"
   when: paranoid_mode|bool
+  become_user: root
+  become_method: sudo
 
 - name: 'Wait for LUKS success file: {{ luks_success_file }}'
   wait_for:
