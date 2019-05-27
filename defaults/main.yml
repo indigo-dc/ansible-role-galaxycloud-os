@@ -59,20 +59,7 @@ os_storage: "IaaS"
 # IaaS block storage volume is attached to the VM.
 
 #________________________________
-# 2. onedata
-
-onedata_dir: '/onedata'
-onedatactl_config_file: '/etc/galaxyctl/onedatactl.ini'
-userdata_oneprovider: 'not_a_provider'
-userdata_token: 'not_a_token'
-userdata_space: 'galaxy'
-insecure: True
-nonempty: True
-uid: '{{ GALAXY_UID }}'
-gid: '{{ GALAXY_UID }}'
-
-#________________________________
-# 3. encryption
+# 2. encryption
 
 luks_lock_dir: '/var/run/fast_luks'
 luks_success_file: '/var/run/fast-luks-encryption.success'
@@ -98,3 +85,11 @@ filesystem: 'ext4'
 # To prevent cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt.
 # Low level block storage deletion before encryption. Takes time and depends on external disk storage size.
 paranoid_mode: false
+
+# vault details
+vault_url: ""
+vault_token: ""
+vault_secrets_path: ""
+iam_client_id: ""
+iam_client_secret: ""
+

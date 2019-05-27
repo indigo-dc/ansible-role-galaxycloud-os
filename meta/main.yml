@@ -15,8 +15,3 @@ galaxy_info:
   galaxy_tags:
     - galaxy
     - web
-dependencies:
-  - role: indigo-dc.galaxycloud-indigorepo
-    when: os_storage == 'onedata'
-  - role: indigo-dc.oneclient
-    when: os_storage == 'onedata'
