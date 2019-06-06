@@ -88,8 +88,8 @@ paranoid_mode: false
 
 # vault details
 vault_url: ""
-vault_token: ""
-vault_secrets_path: ""
+vault_wrapped_token: ""
+vault_secret_path: ""
 iam_client_id: ""
 iam_client_secret: ""
 
