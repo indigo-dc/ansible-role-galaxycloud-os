@@ -4,7 +4,7 @@
     name: "Start Galaxy"
     special_time: reboot
     job: "{{ galaxy_custom_script_path }}/galaxy-startup"
-  when: os_storage == 'IaaS'
+  when: not storage_encryption|bool
 
 - name: Copy reboot warning script
   template:

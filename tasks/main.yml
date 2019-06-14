@@ -22,7 +22,7 @@
 
 - include: luks.yml
   when:
-    - os_storage == 'encryption'
+    - storage_encryption|bool
     - not luks_success_file_created.stat.exists
     - not luks_config_file_created.stat.exists
   become_user: '{{ galaxy_user }}'

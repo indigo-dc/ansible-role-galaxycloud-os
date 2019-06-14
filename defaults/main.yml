@@ -46,20 +46,12 @@ GALAXY_ADMIN_EMAIL: "admin@server.com"
 GALAXY_ADMIN_PASSWORD: "galaxy_admin_password"
 
 #________________________________
-# Isolation specific vars
+# Encryption specific variables
+# Bblock storage volume encrypted with AES is mounted
+# The encryption is disabled by default.
+# User trigger the encryption
 #
-# 1. IaaS ---------> IaaS block storage volume is attached
-# 2. onedata ------> OneData volume is mounted
-# 3. encryption ---> IaaS block storage volume encrypted with AES is mounted
-
-os_storage: "IaaS"
-
-#________________________________
-# 1. IaaS
-# IaaS block storage volume is attached to the VM.
-
-#________________________________
-# 2. encryption
+storage_encryption: False
 
 luks_lock_dir: '/var/run/fast_luks'
 luks_success_file: '/var/run/fast-luks-encryption.success'
@@ -86,10 +78,12 @@ filesystem: 'ext4'
 # Low level block storage deletion before encryption. Takes time and depends on external disk storage size.
 paranoid_mode: false
 
+# Hashicorp Vault Integration
 # vault details
 vault_url: ""
-vault_wrapped_token: ""
+vault_wrapping_token: ""
 vault_secret_path: ""
+vault_secret_key: ""
 iam_client_id: ""
 iam_client_secret: ""
 

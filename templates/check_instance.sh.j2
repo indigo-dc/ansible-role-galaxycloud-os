@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OS_STORAGE='{{ os_storage }}'
+STORAGE_ENCRYPTION={{ storage_encryption }}
 URL='{{ galaxy_instance_url }}'
 cryptdev_ini_file='/etc/galaxy/luks-cryptdev.ini'
 
@@ -185,7 +185,7 @@ if [[ $code -ne 0 ]]; then
   __galaxy_status
 fi
 
-if [[ $OS_STORAGE == 'encryption' ]]; then
+if [[ $STORAGE_ENCRYPTION == 'True' ]]; then
   echo -e "\nChecking the encrypted volume:"
   __stat_ini_file
   __read_ini_file
