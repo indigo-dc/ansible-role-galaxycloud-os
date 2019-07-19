@@ -28,6 +28,12 @@
   become_user: '{{ galaxy_user }}'
   become: true
 
+- include: luksctl_api.yml
+  when:
+    - storage_encryption|bool
+    - not luks_success_file_created.stat.exists
+    - not luks_config_file_created.stat.exists
+
 # Finish instance configuration
 - include: crontab.yml
 - include: custom.yml

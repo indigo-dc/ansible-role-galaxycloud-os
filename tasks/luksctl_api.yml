@@ -1,0 +1,48 @@
+---
+- name: Create user luksctl_api user
+  user:
+    name: 'luksctl_api'
+    shell: '/bin/bash'
+
+#______________________________________
+# install luksctl
+
+- include: luksctl.yml
+  become_user: 'luksctl_api'
+  become: true 
+
+- name: Enable luksctl_api user to run luksctl
+  line_in_file:
+    dest: '/etc/sudoers'
+    regexp: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl'
+    state: present
+
+#______________________________________
+# Install luksctl_api
+
+- stat:
+    path: '/home/luksctl_api/luksctl_api'
+    register: luksctl_api_installed
+
+- name: Clone luksctl API
+  git:
+    repo: 'https://github.com/Laniakea-elixir-it/luksctl_api.git'
+    version: HEAD
+    clone: yes
+    update: yes
+    dest: '/home/luksctl_api/luksctl_api'
+  become_user: 'luksctl_api'
+  become: true
+  when: not luksctl_api_installed.stat.exists
+
+- name: Copy systemd unit file
+  copy:
+    src: '/home/luksctl_api/luksctl_api/gunicorn/luksctl-api.service'
+    dest: '/etc/systemd/system/luksctl-api.service'
+    remote_src: yes
+
+- name: Start and enable luksctl_api
+  service:
+    name: luksctl-api
+    state: started
+    enabled: yes
