@@ -28,7 +28,7 @@
 - name: Clone luksctl API
   git:
     repo: 'https://github.com/Laniakea-elixir-it/luksctl_api.git'
-    version: HEAD
+    version: devel
     clone: yes
     update: yes
     dest: '/home/luksctl_api/luksctl_api'
@@ -41,6 +41,13 @@
     src: '/home/luksctl_api/luksctl_api/gunicorn/luksctl-api.service'
     dest: '/etc/systemd/system/luksctl-api.service'
     remote_src: yes
+
+- name: Create api virtualenvironment
+  pip:
+    requirements: '/home/luksctl_api/luksctl_api/requirements.txt'
+    virtualenv: '/home/luksctl_api/luksctl_api/venv'
+  become_user: 'luksctl_api'
+  become: true
 
 - name: Start and enable luksctl_api
   service:
