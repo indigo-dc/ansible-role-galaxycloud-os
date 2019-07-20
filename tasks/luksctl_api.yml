@@ -23,7 +23,7 @@
 
 - stat:
     path: '/home/luksctl_api/luksctl_api'
-    register: luksctl_api_installed
+  register: luksctl_api_installed
 
 - name: Clone luksctl API
   git:
