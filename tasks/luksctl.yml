@@ -20,7 +20,7 @@
 
 - name: Install luksctl
   pip:
-    name: '{{ luksctl_path }}/.'
+    name: '/home/luksctl_api/luksctl/.'
     executable: '{{ pip_path.stdout }}'
   become_user: root
   become_method: sudo
