@@ -1,7 +1,7 @@
 ---
 - stat:
     path: '/home/luksctl_api/luksctl'
-    register: luksctl_installed
+  register: luksctl_installed
 
 - name: 'Clone LUKS Central Management Tool (luksctl)'
   git:
