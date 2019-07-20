@@ -14,8 +14,9 @@
 - name: Enable luksctl_api user to run luksctl
   lineinfile:
     dest: '/etc/sudoers'
-    regexp: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl'
+    line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl'
     state: present
+    insertafter: EOF
 
 #______________________________________
 # Install luksctl_api
