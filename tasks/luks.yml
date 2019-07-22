@@ -94,3 +94,5 @@
     regexp: '{{ export_dir }}'
     state: absent
     backup: yes
+  become_user: root
+  become_method: sudo
