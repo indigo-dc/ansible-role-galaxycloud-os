@@ -57,7 +57,8 @@ luks_lock_dir: '/var/run/fast_luks'
 luks_success_file: '/var/run/fast-luks-encryption.success'
 volume_setup_success_file: '/var/run/fast-luks-volume-setup.success'
 luks_log_path: '{{ galaxy_log_path }}'
-luks_config_file: '/etc/luks/luks-cryptdev.ini'
+luks_config_path: '/etc/luks'
+luks_config_file: '{{ luks_config_path }}/luks-cryptdev.ini'
 wait_timeout: 18000 # wait for 5 hous FIXME
 
 # encryption details

@@ -38,16 +38,21 @@
 
 - name: Copy systemd unit file
   copy:
-    src: '/home/luksctl_api/luksctl_api/gunicorn/luksctl-api.service'
+    src: '/home/luksctl_api/luksctl_api/gunicorn/luksctl-api-ssl.service'
     dest: '/etc/systemd/system/luksctl-api.service'
     remote_src: yes
 
-- name: Create api virtualenvironment
+- name: Create api virtual environment
   pip:
     requirements: '/home/luksctl_api/luksctl_api/requirements.txt'
     virtualenv: '/home/luksctl_api/luksctl_api/venv'
   become_user: 'luksctl_api'
   become: true
+
+- name: Create self signed cert
+  command: openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650 -nodes -subj '/CN=localhost'
+  args:
+    chdir: '{{ luks_config_path }}'
 
 - name: Start and enable luksctl_api
   service:
