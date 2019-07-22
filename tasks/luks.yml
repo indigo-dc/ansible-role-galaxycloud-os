@@ -87,3 +87,10 @@
 
 # check if {{ export_dir }} is a mountpoint after LUKS encryption
 - include: check_mountpoint_out.yml
+
+- name: "Remove {{ export_dir }} with old device from fstab"
+  lineinfile:
+    dest: /etc/fstab
+    regexp: '{{ export_dir }}'
+    state: absent
+    backup: yes
