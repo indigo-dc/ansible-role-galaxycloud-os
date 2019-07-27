@@ -36,4 +36,8 @@
 
 # Finish instance configuration
 - include: crontab.yml
+  when: enable_reboot_scripts|bool
+
+# Configure success mail and check_instance script
 - include: custom.yml
+  when: enable_customization_scripts|bool
