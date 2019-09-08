@@ -36,6 +36,16 @@
   become: true
   when: not luksctl_api_installed.stat.exists
 
+- name: 'Copy config file for cluster'
+  template:
+    src: 'luksctl_api_config_cluster.j2'
+    dest: '/home/luksctl_api/luksctl_api/config.json'
+  become_user: 'luksctl_api'
+  become: true
+  when: 
+    - galaxy_lrms == 'slurm'
+    - not luksctl_api_installed.stat.exists
+
 - name: Copy systemd unit file
   copy:
     src: '/home/luksctl_api/luksctl_api/gunicorn/luksctl-api-ssl.service'
