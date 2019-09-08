@@ -2,5 +2,5 @@
 # Main tasks file for indigo-dc.galaxycloud-os
 # Advanced storage configuration
 
-- include: {{type_of_node}}.yml
+- include: '{{type_of_node}}.yml'
 
