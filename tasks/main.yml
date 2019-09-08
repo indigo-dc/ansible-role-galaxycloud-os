@@ -2,42 +2,5 @@
 # Main tasks file for indigo-dc.galaxycloud-os
 # Advanced storage configuration
 
-# Users rules
-- include: user.yml
+- include: {{type_of_node}}.yml
 
-# Install Galaxy dependencies
-- include: prerequisites.yml
-
-# include mail variables for luks and user warnings
-- include_vars: mail_vars.yml
-
-# LUKS format external volume
-- stat:
-    path: '{{ luks_success_file }}'
-  register: luks_success_file_created
-
-- stat:
-    path: '{{ luks_config_file }}'
-  register: luks_config_file_created
-
-- include: luks.yml
-  when:
-    - storage_encryption|bool
-    - not luks_success_file_created.stat.exists
-    - not luks_config_file_created.stat.exists
-  become_user: '{{ galaxy_user }}'
-  become: true
-
-- include: luksctl_api.yml
-  when:
-    - storage_encryption|bool
-    - not luks_success_file_created.stat.exists
-    - not luks_config_file_created.stat.exists
-
-# Finish instance configuration
-- include: crontab.yml
-  when: enable_reboot_scripts|bool
-
-# Configure success mail and check_instance script
-- include: custom.yml
-  when: enable_customization_scripts|bool

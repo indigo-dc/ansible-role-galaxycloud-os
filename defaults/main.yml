@@ -37,6 +37,14 @@ galaxy_instance_key_pub: ""
 # Galaxy virtual elastic cluster support: Currently supported local and slurm
 galaxy_lrms: local
 
+# Node type for api cluster configuration
+# front is executed for single VMs and cluster front node.
+# wn is executed only on cluster WNs
+type_of_node: front
+
+# List of IPs of the WNs
+wn_ips: []
+
 #________________________________
 # Galaxy administrator e-mail address
 GALAXY_ADMIN_EMAIL: "admin@server.com"
