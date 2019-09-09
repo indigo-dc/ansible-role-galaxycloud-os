@@ -19,7 +19,7 @@
 
 - name: 'Create user luksctl_api_user on the server'
   user:
-    name: 'luksctl_api_user'
+    name: 'luksctl_api_wn'
     shell: '/bin/bash'
     createhome: no
 
