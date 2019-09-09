@@ -6,6 +6,7 @@
   vars:
     packages:
     - git
+    - python-virtualenv
   when: ansible_os_family == "RedHat"
 
 - name: '[Ubuntu] Install packages'
@@ -15,6 +16,7 @@
   vars:
     packages:
     - git
+    - python-virtualenv
   when: ansible_os_family == "Debian"
 
 - name: 'Create user luksctl_api_user on the server'
