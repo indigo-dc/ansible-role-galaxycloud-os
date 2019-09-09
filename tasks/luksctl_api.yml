@@ -17,6 +17,27 @@
     line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl'
     state: present
     insertafter: EOF
+  when: galaxy_lrms == 'local'
+
+- name: '[EL] Enable luksctl_api user to run luksctl'
+  lineinfile:
+    dest: '/etc/sudoers'
+    line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl,/bin/systemctl restart nfs-server'
+    state: present
+    insertafter: EOF
+  when:
+    - galaxy_lrms == 'slurm'
+    - ansible_os_family == "RedHat"
+
+- name: '[Ubuntu] Enable luksctl_api user to run luksctl'
+  lineinfile:
+    dest: '/etc/sudoers'
+    line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl,/bin/systemctl restart nfs-kernel-server'
+    state: present
+    insertafter: EOF
+  when:
+    - galaxy_lrms == 'slurm'
+    - ansible_os_family == "Debian"
 
 #______________________________________
 # Install luksctl_api
