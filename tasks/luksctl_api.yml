@@ -19,7 +19,7 @@
     insertafter: EOF
   when: galaxy_lrms == 'local'
 
-- name: '[EL] Enable luksctl_api user to run luksctl'
+- name: '[EL] Enable luksctl_api user to run luksctl on cluster'
   lineinfile:
     dest: '/etc/sudoers'
     line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl,/bin/systemctl restart nfs-server'
@@ -29,7 +29,7 @@
     - galaxy_lrms == 'slurm'
     - ansible_os_family == "RedHat"
 
-- name: '[Ubuntu] Enable luksctl_api user to run luksctl'
+- name: '[Ubuntu] Enable luksctl_api user to run luksctl on cluster'
   lineinfile:
     dest: '/etc/sudoers'
     line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl,/bin/systemctl restart nfs-kernel-server'
@@ -38,6 +38,15 @@
   when:
     - galaxy_lrms == 'slurm'
     - ansible_os_family == "Debian"
+
+- name: 'Enable luksctl_api user to run luksctl for docker applications'
+  lineinfile:
+    dest: '/etc/sudoers'
+    line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl,/bin/systemctl restart docker'
+    state: present
+    insertafter: EOF
+  when:
+    - ansible_virtualization_type == "docker"
 
 #______________________________________
 # Install luksctl_api
@@ -66,6 +75,16 @@
   when: 
     - galaxy_lrms == 'slurm'
     - not luksctl_api_installed.stat.exists
+
+- name: 'Copy config file for docker applications'
+  copy:
+    src: '/home/luksctl_api/luksctl_api/config.json.sample_docker'
+    dest: '/home/luksctl_api/luksctl_api/config.json'
+    remote_src: yes
+  become_user: 'luksctl_api'
+  become: true
+  when:
+    - ansible_virtualization_type == "docker"
 
 - name: Copy systemd unit file
   copy:
