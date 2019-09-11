@@ -46,7 +46,7 @@
     state: present
     insertafter: EOF
   when:
-    - ansible_virtualization_type == "docker"
+    - application_virtualization_type == "docker"
 
 #______________________________________
 # Install luksctl_api
@@ -84,7 +84,7 @@
   become_user: 'luksctl_api'
   become: true
   when:
-    - ansible_virtualization_type == "docker"
+    - application_virtualization_type == "docker"
 
 - name: Copy systemd unit file
   copy:

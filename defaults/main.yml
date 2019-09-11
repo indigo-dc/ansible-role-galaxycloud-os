@@ -46,6 +46,10 @@ type_of_node: front
 wn_ips: []
 
 #________________________________
+# If application run on encrypted storage is dockerized, docker needs to be restarted
+application_virtualization_type: 'vm'
+
+#________________________________
 # Galaxy administrator e-mail address
 GALAXY_ADMIN_EMAIL: "admin@server.com"
 
