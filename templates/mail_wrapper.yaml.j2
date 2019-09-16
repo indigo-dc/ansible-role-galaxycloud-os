@@ -1,8 +1,0 @@
----
-- name: Send success mail once galaxy is ready.
-  mail:
-    from: '{{ mail_from }}'
-    to: "{{ GALAXY_ADMIN_EMAIL }}"
-    subject: '{{ success_mail_subject }}'
-    body: '{% raw -%}{{ lookup("file", "/tmp/mail_success.txt") }}{% endraw -%}'
-    subtype: html

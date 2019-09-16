@@ -13,18 +13,3 @@
     dest: '/home/{{ galaxy_user }}/.bashrc'
     line: '{{ custom_utils_path }}/check_instance'
     state: present
-
-# Configure success mail to be sent once the deployment is done.
-# We create it here, because only this role has all the information
-# to correctly create the mail.
-# It has to be sent by galaxycloud, tools, or refdata, depending
-# on which one is the last run role.
-- name: Set success mail content
-  template:
-    src: 'mail_success.html.j2'
-    dest: '{{ custom_utils_path }}/mail_success.txt'
-
-- name: Configure success mail to be sent once deployment is done
-  template:
-    src: 'mail_wrapper.yaml.j2'
-    dest: '{{ custom_utils_path }}/mail_wrapper.yaml'
