@@ -38,7 +38,7 @@
   git:
     repo: 'https://github.com/Laniakea-elixir-it/fast-luks.git'
     dest: '{{ custom_utils_path }}/fast-luks'
-    version: 'vault'
+    version: 'v3.0.1'
 
 # check if /export is mountpoint before LUKS encryption
 - include: check_mountpoint_in.yml
