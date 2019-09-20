@@ -1,0 +1,27 @@
+---
+- stat:
+    path: '/home/luksctl_api/luksctl'
+  register: luksctl_installed
+
+- name: 'Clone LUKS Central Management Tool (luksctl)'
+  git:
+    repo: 'https://github.com/Laniakea-elixir-it/luksctl.git'
+    version: HEAD
+    clone: yes
+    update: yes
+    dest: '/home/luksctl_api/luksctl'
+  when: not luksctl_installed.stat.exists
+
+- name: Find system pip path
+  command: '/usr/bin/which pip'
+  register: pip_path
+  environment:
+    PATH: '/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin'
+
+- name: Install luksctl
+  pip:
+    name: '/home/luksctl_api/luksctl/.'
+    executable: '{{ pip_path.stdout }}'
+  become_user: root
+  become_method: sudo
+  when: not luksctl_installed.stat.exists

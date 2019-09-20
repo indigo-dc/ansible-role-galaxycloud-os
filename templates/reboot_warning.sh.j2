@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OS_STORAGE='{{ os_storage }}'
+STORAGE_ENCRYPTION={{ storage_encryption }}
 IPADDR='{{ ansible_default_ipv4.address }}'
 SUBJECT="[Reboot] Your Galaxy server at $IPADDR has been restarted."
 MAILADDR="{{ GALAXY_ADMIN_EMAIL }}"
@@ -36,7 +36,7 @@ function install_mail {
 #________________________________
 #________________________________
 
-if [[ $OS_STORAGE == "encryption" ]]; then
+if [[ $STORAGE_ENCRYPTION == 'True' ]]; then
 
 BODY="
 Dear User,
@@ -71,7 +71,7 @@ $(cat /home/galaxy/.ssh/authorized_keys)
 Kind Regards.
 "
 
-elif [[ $OS_STORAGE == "IaaS" ]]; then
+elif [[ $STORAGE_ENCRYPTION == 'False' ]]; then
 
 BODY="
 Dear User,

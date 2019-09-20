@@ -37,6 +37,18 @@ galaxy_instance_key_pub: ""
 # Galaxy virtual elastic cluster support: Currently supported local and slurm
 galaxy_lrms: local
 
+# Node type for api cluster configuration
+# front is executed for single VMs and cluster front node.
+# wn is executed only on cluster WNs
+type_of_node: front
+
+# List of IPs of the WNs
+wn_ips: []
+
+#________________________________
+# If application run on encrypted storage is dockerized, docker needs to be restarted
+application_virtualization_type: 'vm'
+
 #________________________________
 # Galaxy administrator e-mail address
 GALAXY_ADMIN_EMAIL: "admin@server.com"
@@ -46,39 +58,19 @@ GALAXY_ADMIN_EMAIL: "admin@server.com"
 GALAXY_ADMIN_PASSWORD: "galaxy_admin_password"
 
 #________________________________
-# Isolation specific vars
+# Encryption specific variables
+# Bblock storage volume encrypted with AES is mounted
+# The encryption is disabled by default.
+# User trigger the encryption
 #
-# 1. IaaS ---------> IaaS block storage volume is attached
-# 2. onedata ------> OneData volume is mounted
-# 3. encryption ---> IaaS block storage volume encrypted with AES is mounted
-
-os_storage: "IaaS"
-
-#________________________________
-# 1. IaaS
-# IaaS block storage volume is attached to the VM.
-
-#________________________________
-# 2. onedata
-
-onedata_dir: '/onedata'
-onedatactl_config_file: '/etc/galaxyctl/onedatactl.ini'
-userdata_oneprovider: 'not_a_provider'
-userdata_token: 'not_a_token'
-userdata_space: 'galaxy'
-insecure: True
-nonempty: True
-uid: '{{ GALAXY_UID }}'
-gid: '{{ GALAXY_UID }}'
-
-#________________________________
-# 3. encryption
+storage_encryption: False
 
 luks_lock_dir: '/var/run/fast_luks'
 luks_success_file: '/var/run/fast-luks-encryption.success'
 volume_setup_success_file: '/var/run/fast-luks-volume-setup.success'
 luks_log_path: '{{ galaxy_log_path }}'
-luks_config_file: '{{ galaxy_custom_config_path }}/luks-cryptdev.ini'
+luks_config_path: '/etc/luks'
+luks_config_file: '{{ luks_config_path }}/luks-cryptdev.ini'
 wait_timeout: 18000 # wait for 5 hous FIXME
 
 # encryption details
@@ -98,3 +90,19 @@ filesystem: 'ext4'
 # To prevent cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt.
 # Low level block storage deletion before encryption. Takes time and depends on external disk storage size.
 paranoid_mode: false
+
+# Hashicorp Vault Integration
+# vault details
+vault_url: ""
+vault_wrapping_token: ""
+vault_secret_path: ""
+vault_secret_key: ""
+
+#________________________________
+# Enable end playbook
+
+# Configure reboot scripts
+enable_reboot_scripts: true
+
+# Configure success mail and check_instance script
+enable_customization_scripts: true

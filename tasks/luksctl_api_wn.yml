@@ -1,0 +1,85 @@
+---
+- name: '[EL] Install packages'
+  yum:
+    name: '{{ packages }}'
+    state: present
+  vars:
+    packages:
+    - git
+    - python-virtualenv
+  when: ansible_os_family == "RedHat"
+
+- name: '[Ubuntu] Install packages'
+  apt:
+    name: '{{ packages }}'
+    state: present
+  vars:
+    packages:
+    - git
+    - python-virtualenv
+  when: ansible_os_family == "Debian"
+
+- name: 'Create user luksctl_api_user on the server'
+  user:
+    name: 'luksctl_api_wn'
+    shell: '/bin/bash'
+    createhome: no
+
+- name: Enable luksctl_api_wn user to mount nfs volumes
+  lineinfile:
+    dest: '/etc/sudoers'
+    line: 'luksctl_api_wn ALL=NOPASSWD:/bin/mount'
+    state: present
+    insertafter: EOF
+
+#______________________________________
+# Install luksctl_api for WNs
+
+- stat:
+    path: '/opt/luksctl_api'
+  register: luksctl_api_installed
+
+- name: Clone luksctl API
+  git:
+    repo: 'https://github.com/Laniakea-elixir-it/luksctl_api.git'
+    version: devel
+    clone: yes
+    update: yes
+    dest: '/opt/luksctl_api'
+  when: not luksctl_api_installed.stat.exists
+
+- name: Recursively change ownership of a directory
+  file:
+    path: '/opt/luksctl_api'
+    state: directory
+    recurse: yes
+    owner: 'luksctl_api_wn'
+    group: 'luksctl_api_wn'
+  when: not luksctl_api_installed.stat.exists
+
+- name: Create config file
+  copy:
+    src: '/opt/luksctl_api/wn/config.json.sample'
+    dest: '/opt/luksctl_api/wn/config.json'
+    remote_src: yes
+  become_user: 'luksctl_api_wn'
+  become: true
+
+- name: Copy systemd unit file
+  copy:
+    src: '/opt/luksctl_api/gunicorn/luksctl-api-wn.service'
+    dest: '/etc/systemd/system/luksctl-api-wn.service'
+    remote_src: yes
+
+- name: Create api virtual environment
+  pip:
+    requirements: '/opt/luksctl_api/requirements.txt'
+    virtualenv: '/opt/luksctl_api/wn/venv'
+  become_user: 'luksctl_api_wn'
+  become: true
+
+- name: Start and enable luksctl-api-wn
+  service:
+    name: luksctl-api-wn
+    state: started
+    enabled: yes

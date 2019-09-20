@@ -1,0 +1,4 @@
+---
+- include: luksctl_api_wn.yml
+  when:
+    - storage_encryption|bool

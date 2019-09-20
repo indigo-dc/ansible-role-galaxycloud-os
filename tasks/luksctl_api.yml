@@ -1,0 +1,111 @@
+---
+- name: Create user luksctl_api user
+  user:
+    name: 'luksctl_api'
+    shell: '/bin/bash'
+
+#______________________________________
+# install luksctl
+
+- include: luksctl.yml
+  become_user: 'luksctl_api'
+  become: true 
+
+- name: Enable luksctl_api user to run luksctl
+  lineinfile:
+    dest: '/etc/sudoers'
+    line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl'
+    state: present
+    insertafter: EOF
+  when: galaxy_lrms == 'local'
+
+- name: '[EL] Enable luksctl_api user to run luksctl on cluster'
+  lineinfile:
+    dest: '/etc/sudoers'
+    line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl,/bin/systemctl restart nfs-server'
+    state: present
+    insertafter: EOF
+  when:
+    - galaxy_lrms == 'slurm'
+    - ansible_os_family == "RedHat"
+
+- name: '[Ubuntu] Enable luksctl_api user to run luksctl on cluster'
+  lineinfile:
+    dest: '/etc/sudoers'
+    line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl,/bin/systemctl restart nfs-kernel-server'
+    state: present
+    insertafter: EOF
+  when:
+    - galaxy_lrms == 'slurm'
+    - ansible_os_family == "Debian"
+
+- name: 'Enable luksctl_api user to run luksctl for docker applications'
+  lineinfile:
+    dest: '/etc/sudoers'
+    line: 'luksctl_api ALL=NOPASSWD:/usr/bin/luksctl,/usr/local/bin/luksctl,/bin/systemctl restart docker'
+    state: present
+    insertafter: EOF
+  when:
+    - application_virtualization_type == "docker"
+
+#______________________________________
+# Install luksctl_api
+
+- stat:
+    path: '/home/luksctl_api/luksctl_api'
+  register: luksctl_api_installed
+
+- name: Clone luksctl API
+  git:
+    repo: 'https://github.com/Laniakea-elixir-it/luksctl_api.git'
+    version: devel
+    clone: yes
+    update: yes
+    dest: '/home/luksctl_api/luksctl_api'
+  become_user: 'luksctl_api'
+  become: true
+  when: not luksctl_api_installed.stat.exists
+
+- name: 'Copy config file for cluster'
+  template:
+    src: 'luksctl_api_config_cluster.j2'
+    dest: '/home/luksctl_api/luksctl_api/config.json'
+  become_user: 'luksctl_api'
+  become: true
+  when: 
+    - galaxy_lrms == 'slurm'
+    - not luksctl_api_installed.stat.exists
+
+- name: 'Copy config file for docker applications'
+  copy:
+    src: '/home/luksctl_api/luksctl_api/config.json.sample_docker'
+    dest: '/home/luksctl_api/luksctl_api/config.json'
+    remote_src: yes
+  become_user: 'luksctl_api'
+  become: true
+  when:
+    - application_virtualization_type == "docker"
+
+- name: Copy systemd unit file
+  copy:
+    src: '/home/luksctl_api/luksctl_api/gunicorn/luksctl-api-ssl.service'
+    dest: '/etc/systemd/system/luksctl-api.service'
+    remote_src: yes
+
+- name: Create api virtual environment
+  pip:
+    requirements: '/home/luksctl_api/luksctl_api/requirements.txt'
+    virtualenv: '/home/luksctl_api/luksctl_api/venv'
+  become_user: 'luksctl_api'
+  become: true
+
+- name: Create self signed cert
+  command: openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650 -nodes -subj '/CN=localhost'
+  args:
+    chdir: '{{ luks_config_path }}'
+
+- name: Start and enable luksctl_api
+  service:
+    name: luksctl-api
+    state: started
+    enabled: yes

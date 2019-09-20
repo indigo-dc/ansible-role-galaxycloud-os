@@ -6,13 +6,13 @@
 
 - name: '[EL] Install packages'
   yum:
-    name: '{{ item }}'
+    name: '{{ packages }}'
     state: present
-  with_items:
+  vars:
+    packages:
     - git
     - vim
     - wget
-    - lsof
   become_user: root
   become_method: sudo
   when: ansible_os_family == "RedHat"
@@ -38,13 +38,13 @@
 
 - name: '[Ubuntu] Install packages'
   apt:
-    name: '{{ item }}'
+    name: '{{ packages }}'
     state: present
-  with_items:
+  vars:
+    packages:
     - git
     - vim
     - wget
-    - lsof
   become_user: root
   become_method: sudo
   when: ansible_os_family == "Debian"
@@ -53,7 +53,3 @@
 # Create directories
 # WARNING!!! Setup directories after galaxy user creation
 - include: path.yml
-
-#______________________________________
-# Install galaxyctl libs
-- include: install_galaxyctl.yml

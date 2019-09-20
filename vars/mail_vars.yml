@@ -5,7 +5,3 @@ mail_from: "Laniakea@elixir-italy.org"
 #________________________________
 # Encryption mail details
 encryption_mail_subject: "[ELIXIR-ITALY] Laniakea storage encryption."
-
-#________________________________
-# success mail details
-success_mail_subject: "[ELIXIR-ITALY] Your Galaxy is ready."
