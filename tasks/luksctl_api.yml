@@ -58,7 +58,7 @@
 - name: Clone luksctl API
   git:
     repo: 'https://github.com/Laniakea-elixir-it/luksctl_api.git'
-    version: devel
+    version: HEAD
     clone: yes
     update: yes
     dest: '/home/luksctl_api/luksctl_api'
