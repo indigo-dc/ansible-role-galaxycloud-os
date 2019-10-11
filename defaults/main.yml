@@ -107,5 +107,5 @@ vault_secret_key: ""
 # Configure reboot scripts
 enable_reboot_scripts: true
 
-# Configure success mail and check_instance script
+# Configure check_instance script
 enable_customization_scripts: true
