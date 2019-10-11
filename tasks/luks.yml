@@ -38,9 +38,9 @@
 
 - name: Clone fast_luks script
   git:
-    repo: 'https://github.com/Laniakea-elixir-it/fast-luks.git'
+    repo: '{{ fast_luks_repository }}'
     dest: '{{ custom_utils_path }}/fast-luks'
-    version: 'master'
+    version: '{{ fast_luks_version }}'
 
 # check if /export is mountpoint before LUKS encryption
 - include: check_mountpoint_in.yml

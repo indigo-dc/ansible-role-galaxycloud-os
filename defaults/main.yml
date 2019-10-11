@@ -73,6 +73,9 @@ luks_config_path: '/etc/luks'
 luks_config_file: '{{ luks_config_path }}/luks-cryptdev.ini'
 wait_timeout: 18000 # wait for 5 hous FIXME
 
+fast_luks_repository: 'https://github.com/Laniakea-elixir-it/fast-luks.git'
+fast_luks_version: 'v3.0.2'
+
 # encryption details
 cipher_algorithm: 'aes-xts-plain64'
 keysize: '256'
