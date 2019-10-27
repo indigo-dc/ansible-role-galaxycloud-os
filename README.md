@@ -53,14 +53,6 @@ The Galaxy path variables are the same of indigo-dc.galaxycloud.
 
 ``GALAXY_ADMIN_EMAIL``: Galaxy administrator e-mail address
 
-### Isolation specific vars ###
-
-``os_storage``: takes three possible values:
-
-  1. ``IaaS``: standard IaaS block storage volume.
-  2. ``onedata``: Onedata space is mounted for user data.
-  3. ``download``: IaaS block storage volume encrypted with ``aes-xts-plain64`` is mounted.
-
 ### Encryption ###
 
 ``storage_encryption``: enable storage encryption (default: ``False``)
@@ -112,38 +104,33 @@ To prevent cryptographic attacks or unwanted file recovery, this data is ideally
 
 ``filesystem``: set file system (default: ``ext4``).
 
+### Hashicorp Vault support ###
+
+``vault_url``: Hashicorp Vault url.
+
+``vault_wrapping_token``: Vault wrapping token, used to write the user secret passphrase on Vault
+
+``vault_secret_path``: Vault path of the passphrase.
+
+``vault_secret_key``: Vault key name of the passphrase.
+
+### Final configuration ###
+
+``enable_reboot_scripts``: configure reboot scripts. (default: ``true``).
+
+``enable_customization_scripts``: configure check_instance script. Currently docker is not supported, set to false. (default ``true``).
+
 Example Playbook
 ----------------
 
-IaaS configuration:
+Plain configuration:
 
 ```yaml
   - hosts: servers
     roles:
       - role: indigo-dc.galaxycloud-os
-        os_storage: 'IaaS'
+        storage_encryption: false
         GALAXY_ADMIN_EMAIL: "admin@server.com"
-        galaxy_instance_key_pub: '<your_ssh_public_key>'
-
-      - role: indigo-dc.galaxycloud
-        GALAXY_ADMIN_EMAIL: "admin@server.com"
-        GALAXY_ADMIN_USERNAME: "admin"
-        GALAXY_VERSION: "release_17.05"
-        galaxy_instance_key_pub: "<your_ssh_public_key>"
-        enable_storage_advanced_options: true
-```
-
-Onedata configuration:
-
-```yaml
-  - hosts: servers
-    roles:
-      - role: indigo-dc.galaxycloud-os
-        os_storage: 'onedata'
-        GALAXY_ADMIN_EMAIL: "admin@server.com"
-        userdata_provider: 'oneprovider2.cloud.ba.infn.it'
-        userdata_token: '<your_access_token>'
-        userdata_space: '<your_onedata_space>'
         galaxy_instance_key_pub: '<your_ssh_public_key>'
 
       - role: indigo-dc.galaxycloud
@@ -160,7 +147,7 @@ LUKS configuration:
   - hosts: servers
     roles:
       - role: indigo-dc.galaxycloud-os
-        os_storage: 'encryption'
+        storage_encryption: true
         GALAXY_ADMIN_EMAIL: "admin@server.com"
         galaxy_instance_key_pub: '<your_ssh_public_key>'
 
