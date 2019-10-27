@@ -8,21 +8,12 @@ The role exploits the [luksctl](https://github.com/Laniakea-elixir-it/luksctl) s
 
 LUKS encryption
 ---------------
-For a detailed description of LUKS encryption used and scripts, see http://galaxycloud.readthedocs.io/en/latest/FS_encryption.html.
+For a detailed description of LUKS encryption used and scripts, see the [Laniakea encryption documentation](https://laniakea.readthedocs.io/en/latest/admin_documentation/encryption/encryption.html)
 
 Dependencies
 ------------
 
 For LUKS encryption the ansible role install ``cryptsetup``.
-
-For onedata reference data provider, the role depends on indigo-dc.oneclient role, to install oneclient:
-
-```yaml
-  - hosts: servers
-    roles:
-      - role: indigo-dc.oneclient
-        when: os_storage == 'onedata'
-```
 
 Variables
 ---------
@@ -51,6 +42,10 @@ The Galaxy path variables are the same of indigo-dc.galaxycloud.
 ``galaxy_instance_key_pub``: instance ssh public key to configure <galaxy_user> access.
 
 ``galaxy_lrms``: enable  Galaxy virtual elastic cluster support. Currently supported local and slurm (default: ``local``, possible values: ``local, slurm``).
+
+``type_of_node``: node type for api cluster configuration. ``front`` is executed for single VMs and cluster front node. ``wn`` is executed only on cluster WNs default: ``front``)
+
+``wn_ips``: list of IPs of the WNs(default: [])
 
 ### Main options ###
 
