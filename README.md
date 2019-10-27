@@ -4,7 +4,7 @@ This role provides storage encryption with aes-xts-plain64 algorithm using LUKS 
 
 Run indigo-dc.galaxycloud-os before indigo-dc.galaxycloud, setting the variable ``enable_storage_advanced_options`` to ``true``. Path configuration for Galaxy is then correctly provided, replacing the indigo-dc.galaxycloud path recipe.
 
-The role exploits the luksctl[https://github.com/Laniakea-elixir-it/luksctl] script and ``luksctl_api`` for LUKS volumes management .
+The role exploits the [luksctl](https://github.com/Laniakea-elixir-it/luksctl) script and [luksctl_api](https://github.com/Laniakea-elixir-it/luksctl_api) for LUKS volumes management .
 
 LUKS encryption
 ---------------
