@@ -47,6 +47,8 @@ The Galaxy path variables are the same of indigo-dc.galaxycloud.
 
 ``wn_ips``: list of IPs of the WNs(default: [])
 
+``application_virtualization_type``: if the application, e.g. Galaxy, running on encrypted storage, is dockerized, docker needs to be restarted. Set ``docker``if needed. (default: 'vm').
+
 ### Main options ###
 
 ``GALAXY_ADMIN_EMAIL``: Galaxy administrator e-mail address
@@ -59,37 +61,26 @@ The Galaxy path variables are the same of indigo-dc.galaxycloud.
   2. ``onedata``: Onedata space is mounted for user data.
   3. ``download``: IaaS block storage volume encrypted with ``aes-xts-plain64`` is mounted.
 
-### Onedata ###
-
-``onedata_dir``: onedata mountpoint. (default: ``/onedata``).
-
-.. Note::
-
-  Once onedata space is mounted, files existing before mount operation, will not be available until volume umount. For this reason we set it to ``/onedata`` to a differet path.
-
-``onedatactl_config_file``: set onedatactl config file (default: ``{{ galaxy_custom_config_path }}/onedatactl.ini``).
-
-``userdata_oneprovider``: set onedata oneprovider.
-
-``userdata_token``: set onedata access token.
-
-``userdata_space``: set space name.
-
 ### Encryption ###
+
+``storage_encryption``: enable storage encryption (default: ``False``)
 
 ``luks_lock_dir``: set luks lock file directory (default: ``/var/run/fast_luks``).
 
 ``luks_success_file``: set success file. It signals to ansible to proceed (default: ``/var/run/fast-luks.success``).
 
+``volume_setup_success_file``: set success file. It signals to ansible to proceed (default: ``/var/run/fast-luks-volume-setup.success``)
+
 ``luks_log_path``: set LUKS log path (default: ``/var/log/galaxy``).
+
+``luks_config_path``: set LUKS configuration file path (default: ``/etc/luks``).
 
 ``luks_config_file``: set luksctl configuration file (default: ``/etc/galaxy/luks-cryptdev.ini``).
 
 ``wait_timeout``: time to waint encryption password (default: 5 hours).
 
-``mail_from``: set mail from field (default: ``GalaxyCloud@elixir-italy.org``).
-
-``mail_subject``: with the instructions to access and encrypt the volume is sent to the user (default: ``[ELIXIR-ITALY] GalaxyCloud encrypt password``).
+``fast_luks_repository``: LUKS script to perform encryption repository (``https://github.com/Laniakea-elixir-it/fast-luks.git``).
+``fast_luks_version``: LUKS script to perform encryption version (``v3.0.2``).
 
 Create block file:
 
