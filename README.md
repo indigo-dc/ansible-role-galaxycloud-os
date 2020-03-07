@@ -1,36 +1,19 @@
 indigo-dc.galaxycloud-os
 ========================
-This role provides advanced storage options for Galaxy instances.
+This role provides storage encryption with aes-xts-plain64 algorithm using LUKS for Galaxy instances.
 
-Run indigo-dc.galaxycloud-os before indigo-dc.galaxycloud, setting the variable ``enable_storage_advanced_options`` to ``true``.
+Run indigo-dc.galaxycloud-os before indigo-dc.galaxycloud, setting the variable ``enable_storage_advanced_options`` to ``true``. Path configuration for Galaxy is then correctly provided, replacing the indigo-dc.galaxycloud path recipe.
 
-It is possible to select three different storage options using the ``os_storage`` ansible role variable.
-
-- ``Iaas``: IaaS block storage volume is attached to the instance and Galaxy is configured.
-- ``onedata``: Onedata space is mounte through oneclient and Galaxy is configured.
-- ``encryption``: IaaS block storage volume is encrypted with aes-xts-plain64 algorithm using LUKS.
-
-Path configuration for Galaxy is then correctly set, depending on the storage solution selected, replacing the indigo-dc.galaxycloud path recipe (with the ``enable_storage_advanced_options`` set to ``true``).
-
-The role exploits the ``galaxyctl_libs`` (see :doc:`script_galaxyctl_libs`) for LUKS and onedata volumes management .
+The role exploits the [luksctl](https://github.com/Laniakea-elixir-it/luksctl) script and [luksctl_api](https://github.com/Laniakea-elixir-it/luksctl_api) for LUKS volumes management .
 
 LUKS encryption
 ---------------
-For a detailed description of LUKS encryption used and scripts, see http://galaxycloud.readthedocs.io/en/latest/FS_encryption.html.
+For a detailed description of LUKS encryption used and scripts, see the [Laniakea encryption documentation](https://laniakea.readthedocs.io/en/latest/admin_documentation/encryption/encryption.html)
 
 Dependencies
 ------------
 
 For LUKS encryption the ansible role install ``cryptsetup``.
-
-For onedata reference data provider, the role depends on indigo-dc.oneclient role, to install oneclient:
-
-```yaml
-  - hosts: servers
-    roles:
-      - role: indigo-dc.oneclient
-        when: os_storage == 'onedata'
-```
 
 Variables
 ---------
@@ -60,49 +43,36 @@ The Galaxy path variables are the same of indigo-dc.galaxycloud.
 
 ``galaxy_lrms``: enable  Galaxy virtual elastic cluster support. Currently supported local and slurm (default: ``local``, possible values: ``local, slurm``).
 
+``type_of_node``: node type for api cluster configuration. ``front`` is executed for single VMs and cluster front node. ``wn`` is executed only on cluster WNs default: ``front``)
+
+``wn_ips``: list of IPs of the WNs(default: [])
+
+``application_virtualization_type``: if the application, e.g. Galaxy, running on encrypted storage, is dockerized, docker needs to be restarted. Set ``docker``if needed. (default: 'vm').
+
 ### Main options ###
 
 ``GALAXY_ADMIN_EMAIL``: Galaxy administrator e-mail address
 
-### Isolation specific vars ###
-
-``os_storage``: takes three possible values:
-
-  1. ``IaaS``: standard IaaS block storage volume.
-  2. ``onedata``: Onedata space is mounted for user data.
-  3. ``download``: IaaS block storage volume encrypted with ``aes-xts-plain64`` is mounted.
-
-### Onedata ###
-
-``onedata_dir``: onedata mountpoint. (default: ``/onedata``).
-
-.. Note::
-
-  Once onedata space is mounted, files existing before mount operation, will not be available until volume umount. For this reason we set it to ``/onedata`` to a differet path.
-
-``onedatactl_config_file``: set onedatactl config file (default: ``{{ galaxy_custom_config_path }}/onedatactl.ini``).
-
-``userdata_oneprovider``: set onedata oneprovider.
-
-``userdata_token``: set onedata access token.
-
-``userdata_space``: set space name.
-
 ### Encryption ###
+
+``storage_encryption``: enable storage encryption (default: ``False``)
 
 ``luks_lock_dir``: set luks lock file directory (default: ``/var/run/fast_luks``).
 
 ``luks_success_file``: set success file. It signals to ansible to proceed (default: ``/var/run/fast-luks.success``).
 
+``volume_setup_success_file``: set success file. It signals to ansible to proceed (default: ``/var/run/fast-luks-volume-setup.success``)
+
 ``luks_log_path``: set LUKS log path (default: ``/var/log/galaxy``).
+
+``luks_config_path``: set LUKS configuration file path (default: ``/etc/luks``).
 
 ``luks_config_file``: set luksctl configuration file (default: ``/etc/galaxy/luks-cryptdev.ini``).
 
 ``wait_timeout``: time to waint encryption password (default: 5 hours).
 
-``mail_from``: set mail from field (default: ``GalaxyCloud@elixir-italy.org``).
-
-``mail_subject``: with the instructions to access and encrypt the volume is sent to the user (default: ``[ELIXIR-ITALY] GalaxyCloud encrypt password``).
+``fast_luks_repository``: LUKS script to perform encryption repository (``https://github.com/Laniakea-elixir-it/fast-luks.git``).
+``fast_luks_version``: LUKS script to perform encryption version (``v3.0.2``).
 
 Create block file:
 
@@ -134,38 +104,33 @@ To prevent cryptographic attacks or unwanted file recovery, this data is ideally
 
 ``filesystem``: set file system (default: ``ext4``).
 
+### Hashicorp Vault support ###
+
+``vault_url``: Hashicorp Vault url.
+
+``vault_wrapping_token``: Vault wrapping token, used to write the user secret passphrase on Vault
+
+``vault_secret_path``: Vault path of the passphrase.
+
+``vault_secret_key``: Vault key name of the passphrase.
+
+### Final configuration ###
+
+``enable_reboot_scripts``: configure reboot scripts. (default: ``true``).
+
+``enable_customization_scripts``: configure check_instance script. Currently docker is not supported, set to false. (default ``true``).
+
 Example Playbook
 ----------------
 
-IaaS configuration:
+Plain configuration:
 
 ```yaml
   - hosts: servers
     roles:
       - role: indigo-dc.galaxycloud-os
-        os_storage: 'IaaS'
+        storage_encryption: false
         GALAXY_ADMIN_EMAIL: "admin@server.com"
-        galaxy_instance_key_pub: '<your_ssh_public_key>'
-
-      - role: indigo-dc.galaxycloud
-        GALAXY_ADMIN_EMAIL: "admin@server.com"
-        GALAXY_ADMIN_USERNAME: "admin"
-        GALAXY_VERSION: "release_17.05"
-        galaxy_instance_key_pub: "<your_ssh_public_key>"
-        enable_storage_advanced_options: true
-```
-
-Onedata configuration:
-
-```yaml
-  - hosts: servers
-    roles:
-      - role: indigo-dc.galaxycloud-os
-        os_storage: 'onedata'
-        GALAXY_ADMIN_EMAIL: "admin@server.com"
-        userdata_provider: 'oneprovider2.cloud.ba.infn.it'
-        userdata_token: '<your_access_token>'
-        userdata_space: '<your_onedata_space>'
         galaxy_instance_key_pub: '<your_ssh_public_key>'
 
       - role: indigo-dc.galaxycloud
@@ -182,7 +147,7 @@ LUKS configuration:
   - hosts: servers
     roles:
       - role: indigo-dc.galaxycloud-os
-        os_storage: 'encryption'
+        storage_encryption: true
         GALAXY_ADMIN_EMAIL: "admin@server.com"
         galaxy_instance_key_pub: '<your_ssh_public_key>'
 
